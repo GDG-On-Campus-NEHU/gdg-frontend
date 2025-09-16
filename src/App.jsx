@@ -3,9 +3,10 @@ import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import HomePage from './pages/HomePage';
 import BlogPage from './pages/BlogPage';
-import ProjectsPage from './pages/ProjectsPage'; // Import new page
-import RoadmapsPage from './pages/RoadmapsPage'; // Import new page
-import TeamPage from './pages/TeamPage';       // Import new page
+import BlogDetailPage from './components/BlogDetailPage';
+import ProjectsPage from './pages/ProjectsPage'; 
+import RoadmapsPage from './pages/RoadmapsPage'; 
+import TeamPage from './pages/TeamPage';       
 
 function App() {
   return (
@@ -24,8 +25,11 @@ function App() {
         {/* Dedicated pages for each section */}
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/blog/:postId" element={<BlogDetailPage />} />
         <Route path="/roadmaps" element={<RoadmapsPage />} />
         <Route path="/team" element={<TeamPage />} />
+        {/* ... other routes */}
+
       </Routes>
     </>
   );
