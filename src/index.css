@@ -48,9 +48,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Keep visited links consistent with their normal colors */
+/* Keep visited links consistent while allowing hover/focus colors to apply */
 a:visited {
-  color: inherit !important;
+  color: inherit;
 }
 
 /* --- Animated Gradient Background --- */
