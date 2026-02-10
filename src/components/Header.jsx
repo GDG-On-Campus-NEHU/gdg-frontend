@@ -43,14 +43,32 @@ function Header() {
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             <span className="theme-icon theme-icon-moon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" role="presentation">
-                <path d="M14.5 2a8.5 8.5 0 1 0 7.5 12.5A9.5 9.5 0 1 1 14.5 2z" />
+              <svg
+                viewBox="0 0 24 24"
+                role="presentation"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ fill: 'none', stroke: 'currentColor' }}
+              >
+                <path d="M21 14.2A8.5 8.5 0 1 1 9.8 3a7 7 0 0 0 11.2 11.2Z" />
               </svg>
             </span>
             <span className="theme-icon theme-icon-sun" aria-hidden="true">
-              <svg viewBox="0 0 24 24" role="presentation">
-                <circle cx="12" cy="12" r="5" />
-                <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M19.4 4.6l-2.1 2.1M6.7 17.3l-2.1 2.1" />
+              <svg
+                viewBox="0 0 24 24"
+                role="presentation"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ fill: 'none', stroke: 'currentColor' }}
+              >
+                <circle cx="12" cy="12" r="4.5" />
+                <path d="M12 2.5v2.5M12 19v2.5M2.5 12h2.5M19 12h2.5M5 5l1.8 1.8M17.2 17.2l1.8 1.8M19 5l-1.8 1.8M6.8 17.2l-1.8 1.8" />
               </svg>
             </span>
             <span className="sr-only">
@@ -85,14 +103,32 @@ function Header() {
           aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         >
           <span className="theme-icon theme-icon-moon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" role="presentation">
-              <path d="M14.5 2a8.5 8.5 0 1 0 7.5 12.5A9.5 9.5 0 1 1 14.5 2z" />
+            <svg
+              viewBox="0 0 24 24"
+              role="presentation"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ fill: 'none', stroke: 'currentColor' }}
+            >
+              <path d="M21 14.2A8.5 8.5 0 1 1 9.8 3a7 7 0 0 0 11.2 11.2Z" />
             </svg>
           </span>
           <span className="theme-icon theme-icon-sun" aria-hidden="true">
-            <svg viewBox="0 0 24 24" role="presentation">
-              <circle cx="12" cy="12" r="5" />
-              <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M19.4 4.6l-2.1 2.1M6.7 17.3l-2.1 2.1" />
+            <svg
+              viewBox="0 0 24 24"
+              role="presentation"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ fill: 'none', stroke: 'currentColor' }}
+            >
+              <circle cx="12" cy="12" r="4.5" />
+              <path d="M12 2.5v2.5M12 19v2.5M2.5 12h2.5M19 12h2.5M5 5l1.8 1.8M17.2 17.2l1.8 1.8M19 5l-1.8 1.8M6.8 17.2l-1.8 1.8" />
             </svg>
           </span>
           <span className="sr-only">

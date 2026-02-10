@@ -110,8 +110,20 @@ function TeamMemberPage() {
         );
       case 'instagram':
         return (
-          <svg viewBox="0 0 24 24" role="presentation" aria-hidden="true">
-            <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm10 2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm-5 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM17.5 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+          <svg
+            viewBox="0 0 24 24"
+            role="presentation"
+            aria-hidden="true"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ fill: 'none', stroke: 'currentColor' }}
+          >
+            <rect x="4" y="4" width="16" height="16" rx="4" />
+            <circle cx="12" cy="12" r="3.5" />
+            <circle cx="16.5" cy="7.5" r="1" />
           </svg>
         );
       case 'twitter':
