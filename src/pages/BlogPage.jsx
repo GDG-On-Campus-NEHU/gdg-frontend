@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
-
-const API_BASE_URL = 'http://127.0.0.1:8000';
+import { apiFetch } from '../api';
 
 function BlogPage() {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -21,7 +20,7 @@ function BlogPage() {
   const getTagName = (tag) => (typeof tag === 'string' ? tag : tag?.name);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/blog/`)
+    apiFetch('/api/blog/')
       .then(response => response.json())
       .then(data => {
         // Sort newest first so the hero reflects the latest post.
