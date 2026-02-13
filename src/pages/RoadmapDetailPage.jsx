@@ -8,6 +8,8 @@ function RoadmapDetailPage() {
   const [roadmap, setRoadmap] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [tocItems, setTocItems] = useState([]);
+  const [activeHeadingId, setActiveHeadingId] = useState('');
 
   useContentRailUpdater();
   useHeroRailUpdater();
@@ -29,6 +31,91 @@ function RoadmapDetailPage() {
         setIsLoading(false);
       });
   }, [roadmapId]);
+  const contentHtml =
+    roadmap?.content ||
+    (roadmap?.description ? `<p>${roadmap.description}</p>` : '<p>Details coming soon.</p>');
+  const sanitizedContent = DOMPurify.sanitize(contentHtml);
+
+  const onTocJump = (event, id) => {
+    event.preventDefault();
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    const y = target.getBoundingClientRect().top + window.scrollY - 92;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+    setActiveHeadingId(id);
+  };
+
+  useEffect(() => {
+    if (isLoading || !roadmap) return;
+
+    const contentRoot = document.querySelector('.roadmap-map .blog-post-content');
+    if (!contentRoot) {
+      setTocItems([]);
+      setActiveHeadingId('');
+      return;
+    }
+
+    const headings = Array.from(contentRoot.querySelectorAll('h2'));
+    if (!headings.length) {
+      setTocItems([]);
+      setActiveHeadingId('');
+      return;
+    }
+
+    const idRegistry = new Set();
+    const items = headings.map((heading, index) => {
+      let id = (heading.id || '').trim();
+      if (!id) {
+        const baseId = slugifyHeading(heading.textContent || `section-${index + 1}`);
+        let nextId = baseId || `section-${index + 1}`;
+        let counter = 2;
+
+        while (document.getElementById(nextId) || idRegistry.has(nextId)) {
+          nextId = `${baseId || `section-${index + 1}`}-${counter}`;
+          counter += 1;
+        }
+
+        id = nextId;
+        heading.id = id;
+      }
+
+      idRegistry.add(id);
+      return {
+        id,
+        title: (heading.textContent || `Section ${index + 1}`).trim(),
+      };
+    });
+
+    setTocItems(items);
+    setActiveHeadingId(items[0]?.id || '');
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+        if (visibleEntries.length > 0) {
+          setActiveHeadingId(visibleEntries[0].target.id);
+          return;
+        }
+
+        const previouslyPassed = headings.filter((heading) => heading.getBoundingClientRect().top < 130);
+        if (previouslyPassed.length > 0) {
+          setActiveHeadingId(previouslyPassed[previouslyPassed.length - 1].id);
+        }
+      },
+      {
+        root: null,
+        rootMargin: '-110px 0px -65% 0px',
+        threshold: [0, 0.2, 0.6, 1],
+      }
+    );
+
+    headings.forEach((heading) => observer.observe(heading));
+    return () => observer.disconnect();
+  }, [isLoading, roadmap, roadmapId, sanitizedContent]);
 
   if (isLoading) {
     return (
@@ -50,9 +137,6 @@ function RoadmapDetailPage() {
       </main>
     );
   }
-
-  const contentHtml = roadmap.content || (roadmap.description ? `<p>${roadmap.description}</p>` : '<p>Details coming soon.</p>');
-  const sanitizedContent = DOMPurify.sanitize(contentHtml);
 
   return (
     <main className="blog-detail-page roadmap-map">
@@ -89,8 +173,27 @@ function RoadmapDetailPage() {
 
         <div className="page-container roadmap-map-content">
           <span className="roadmap-content-line" aria-hidden="true" />
-          <div className="blog-post-container">
-            <div className="blog-post-content" dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
+          <div className="roadmap-detail-layout">
+            <div className="blog-post-container">
+              <div className="blog-post-content" dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
+            </div>
+            {tocItems.length > 0 && (
+              <aside className="roadmap-mini-toc" aria-label="In This Page">
+                <p className="roadmap-mini-toc-title">In This Page</p>
+                <ul className="roadmap-mini-toc-list">
+                  {tocItems.map((item) => (
+                    <li
+                      key={item.id}
+                      className={`roadmap-mini-toc-item ${activeHeadingId === item.id ? 'is-active' : ''}`}
+                    >
+                      <a href={`#${item.id}`} onClick={(event) => onTocJump(event, item.id)}>
+                        {item.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </aside>
+            )}
           </div>
         </div>
       </div>
@@ -312,4 +415,13 @@ function useConnectorUpdater() {
       mo.disconnect();
     };
   }, []);
+}
+
+function slugifyHeading(value) {
+  return (value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
 }
