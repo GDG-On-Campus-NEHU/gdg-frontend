@@ -2306,6 +2306,7 @@ body[data-theme="dark"] .card-variant-4 {
   grid-template-columns: minmax(0, 1fr) minmax(250px, 340px);
   gap: 2rem;
   align-items: start;
+  padding-top: 52px;
 }
 
 .event-detail-main {
@@ -2575,5 +2576,7 @@ body[data-theme="dark"] .pill {
 
   .event-detail-sidebar {
     position: static;
+    order: -1;
+    margin-bottom: 1rem;
   }
 }
