@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import { apiFetch } from '../api';
+import { processContent } from '../utils/contentProcessor';
+import '../styles/CKEditorContent.css';
 
 function ProjectDetailPage() {
   const { projectId } = useParams();
@@ -48,7 +50,11 @@ function ProjectDetailPage() {
   }
 
   const contentHtml = project.content || (project.description ? `<p>${project.description}</p>` : '<p>Details coming soon.</p>');
-  const sanitizedContent = DOMPurify.sanitize(contentHtml);
+  const processedContent = processContent(contentHtml);
+  const sanitizedContent = DOMPurify.sanitize(processedContent, {
+    ADD_TAGS: ['iframe'],
+    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'loading', 'referrerpolicy'],
+  });
   const formattedDate = project.published_date
     ? new Date(project.published_date).toLocaleDateString('en-US', {
         year: 'numeric',
@@ -92,7 +98,7 @@ function ProjectDetailPage() {
 
       <div className="page-container">
         <div className="blog-post-container">
-          <div className="blog-post-content" dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
+          <div className="blog-post-content ck-content" dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
         </div>
       </div>
     </main>

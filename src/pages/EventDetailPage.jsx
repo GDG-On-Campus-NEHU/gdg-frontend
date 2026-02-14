@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import { ExternalLink } from 'lucide-react';
 import { apiFetch } from '../api';
+import { processContent } from '../utils/contentProcessor';
+import '../styles/CKEditorContent.css';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -97,7 +99,11 @@ function EventDetailPage() {
     : '';
 
   const contentHtml = event?.content || (event?.summary ? `<p>${event.summary}</p>` : '<p>Details coming soon.</p>');
-  const sanitizedContent = DOMPurify.sanitize(contentHtml);
+  const processedContent = processContent(contentHtml);
+  const sanitizedContent = DOMPurify.sanitize(processedContent, {
+    ADD_TAGS: ['iframe'],
+    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'loading', 'referrerpolicy'],
+  });
 
   const mode = (event?.mode || 'physical').toLowerCase();
   const techTags = Array.isArray(event?.tech_tags)
@@ -227,7 +233,7 @@ function EventDetailPage() {
 
       <div className="page-container event-detail-layout">
         <div className="event-detail-main">
-          <div className="blog-post-content" dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
+          <div className="blog-post-content ck-content" dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
 
           {speakerList.length > 0 && (
             <section className="event-speakers-section">

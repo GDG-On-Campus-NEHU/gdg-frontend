@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import { apiFetch } from '../api';
+import { processContent } from '../utils/contentProcessor';
+import '../styles/CKEditorContent.css';
 
 function RoadmapDetailPage() {
   const { roadmapId } = useParams();
@@ -34,7 +36,11 @@ function RoadmapDetailPage() {
   const contentHtml =
     roadmap?.content ||
     (roadmap?.description ? `<p>${roadmap.description}</p>` : '<p>Details coming soon.</p>');
-  const sanitizedContent = DOMPurify.sanitize(contentHtml);
+  const processedContent = processContent(contentHtml);
+  const sanitizedContent = DOMPurify.sanitize(processedContent, {
+    ADD_TAGS: ['iframe'],
+    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'loading', 'referrerpolicy'],
+  });
 
   const onTocJump = (event, id) => {
     event.preventDefault();
@@ -175,7 +181,7 @@ function RoadmapDetailPage() {
           <span className="roadmap-content-line" aria-hidden="true" />
           <div className="roadmap-detail-layout">
             <div className="blog-post-container">
-              <div className="blog-post-content" dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
+              <div className="blog-post-content ck-content" dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
             </div>
             {tocItems.length > 0 && (
               <aside className="roadmap-mini-toc" aria-label="In This Page">
