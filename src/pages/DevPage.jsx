@@ -2,254 +2,331 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const techStack = [
-  'React (Vite)',
+  'React (Vite) - Deployed on Cloudflare Pages',
   'React Router',
   'Vanilla CSS',
   'JavaScript ( obviously ;) )',
   'Python (Django REST Framework) on the backend',
   'Hopes and Dreams',
   'ChatGPT',
+  'Glue',
 ];
 
 const contributors = [
   { name: 'Rohit K. Shaw', role: 'Frontend, Backend, Design' },
   { name: 'GDG NEHU Core Team', role: 'Content, QA and Club Operations' },
-  { name: 'Student Contributors', role: 'Ideas, Testing and Iteration' },
+  { name: 'Want to contribute?', role: 'Head on over to our Github' },
 ];
 
+const CARD_DEFS = [
+  { id: 'tech', title: 'Tech Stack' },
+  { id: 'contributors', title: 'Contributors' },
+  { id: 'note', title: 'Note' },
+];
+
+function renderCardBody(id) {
+  if (id === 'tech') {
+    return (
+      <ul>
+        {techStack.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    );
+  }
+
+  if (id === 'contributors') {
+    return (
+      <ul>
+        {contributors.map((person) => (
+          <li key={person.name}>
+            <strong>{person.name}</strong>: {person.role}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  return (
+    <p>
+      this page breaks easily and i dont know to fix it, so dont break and it dont tell anyone
+    </p>
+  );
+}
+
 export default function DevPage() {
-  const bulletIdRef = useRef(1);
-  const enemyIdRef = useRef(1);
+  const cardRefs = useRef({});
+  const bodiesRef = useRef([]);
+  const rafRef = useRef(null);
+  const dragRef = useRef(null);
 
-  const createEnemy = (startY = -20) => ({
-    id: enemyIdRef.current++,
-    x: Math.floor(Math.random() * 84) + 8,
-    y: startY - Math.random() * 50,
-    speed: 0.8 + Math.random() * 1.2,
-  });
+  const [isBroken, setIsBroken] = useState(false);
+  const [bodies, setBodies] = useState([]);
+  const isPhoneViewport = () => window.matchMedia('(max-width: 768px)').matches;
 
-  const createInitialState = () => ({
-    shipX: 50,
-    bullets: [],
-    enemies: Array.from({ length: 6 }, () => createEnemy()),
-    score: 0,
-    lives: 3,
-    gameOver: false,
-  });
-
-  const [game, setGame] = useState(createInitialState);
-
-  const moveShip = (delta) => {
-    setGame((prev) => {
-      if (prev.gameOver) {
-        return prev;
-      }
-
-      return {
-        ...prev,
-        shipX: Math.min(95, Math.max(5, prev.shipX + delta)),
-      };
-    });
+  const setCardRef = (id, node) => {
+    if (node) cardRefs.current[id] = node;
+    else delete cardRefs.current[id];
   };
 
-  const shoot = () => {
-    setGame((prev) => {
-      if (prev.gameOver || prev.bullets.length >= 9) {
-        return prev;
+  const startPhysics = () => {
+    const gravity = 1500;
+    const bounce = 0.5;
+
+    let last = performance.now();
+
+    const tick = (now) => {
+      const dt = Math.min((now - last) / 1000, 0.033);
+      last = now;
+
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      const next = bodiesRef.current.map((body) => ({ ...body }));
+
+      for (let i = 0; i < next.length; i += 1) {
+        const body = next[i];
+        const dragging = dragRef.current && dragRef.current.id === body.id;
+
+        if (!dragging) {
+          body.vy += gravity * dt;
+          body.x += body.vx * dt;
+          body.y += body.vy * dt;
+
+          if (body.x < 0) {
+            body.x = 0;
+            body.vx *= -bounce;
+          }
+          if (body.x + body.w > width) {
+            body.x = width - body.w;
+            body.vx *= -bounce;
+          }
+          if (body.y < 0) {
+            body.y = 0;
+            body.vy *= -bounce;
+          }
+          if (body.y + body.h > height) {
+            body.y = height - body.h;
+            body.vy *= -bounce;
+            body.vx *= 0.97;
+            if (Math.abs(body.vy) < 18) body.vy = 0;
+          }
+        }
       }
 
-      return {
-        ...prev,
-        bullets: [
-          ...prev.bullets,
-          {
-            id: bulletIdRef.current++,
-            x: prev.shipX,
-            y: 88,
-          },
-        ],
-      };
-    });
-  };
+      for (let i = 0; i < next.length; i += 1) {
+        for (let j = i + 1; j < next.length; j += 1) {
+          const a = next[i];
+          const b = next[j];
 
-  const resetGame = () => {
-    bulletIdRef.current = 1;
-    enemyIdRef.current = 1;
-    setGame(createInitialState());
-  };
+          if (a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y) {
+            const overlapX = Math.min(a.x + a.w - b.x, b.x + b.w - a.x);
+            const overlapY = Math.min(a.y + a.h - b.y, b.y + b.h - a.y);
 
-  useEffect(() => {
-    const onKeyDown = (event) => {
-      if (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') {
-        event.preventDefault();
-        moveShip(-4);
-      } else if (event.key === 'ArrowRight' || event.key.toLowerCase() === 'd') {
-        event.preventDefault();
-        moveShip(4);
-      } else if (event.key === ' ' || event.key === 'Enter') {
-        event.preventDefault();
-        shoot();
+            if (overlapX < overlapY) {
+              const push = overlapX / 2;
+              if (a.x < b.x) {
+                a.x -= push;
+                b.x += push;
+              } else {
+                a.x += push;
+                b.x -= push;
+              }
+              const avx = a.vx;
+              a.vx = b.vx * 0.9;
+              b.vx = avx * 0.9;
+            } else {
+              const push = overlapY / 2;
+              if (a.y < b.y) {
+                a.y -= push;
+                b.y += push;
+              } else {
+                a.y += push;
+                b.y -= push;
+              }
+              const avy = a.vy;
+              a.vy = b.vy * 0.72;
+              b.vy = avy * 0.72;
+            }
+          }
+        }
       }
+
+      bodiesRef.current = next;
+      setBodies(next);
+      rafRef.current = requestAnimationFrame(tick);
     };
 
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, []);
+    rafRef.current = requestAnimationFrame(tick);
+  };
+
+  const breakWebsite = (clickedId) => {
+    if (isBroken) return;
+    if (isPhoneViewport()) return;
+
+    const initialBodies = CARD_DEFS.map((card, index) => {
+      const node = cardRefs.current[card.id];
+      if (!node) return null;
+      const rect = node.getBoundingClientRect();
+      return {
+        id: card.id,
+        x: rect.left,
+        y: rect.top,
+        w: rect.width,
+        h: rect.height,
+        vx: (Math.random() - 0.5) * 180,
+        vy: card.id === clickedId ? -120 : -40 - index * 20,
+        angle: 0,
+      };
+    }).filter(Boolean);
+
+    if (!initialBodies.length) return;
+
+    bodiesRef.current = initialBodies;
+    setBodies(initialBodies);
+    setIsBroken(true);
+    startPhysics();
+  };
+
+  const onPointerDownCard = (id, event) => {
+    if (!isBroken) return;
+
+    const target = bodiesRef.current.find((body) => body.id === id);
+    if (!target) return;
+
+    event.preventDefault();
+
+    dragRef.current = {
+      id,
+      dx: event.clientX - target.x,
+      dy: event.clientY - target.y,
+      lastX: event.clientX,
+      lastY: event.clientY,
+      lastT: performance.now(),
+      vx: 0,
+      vy: 0,
+    };
+  };
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setGame((prev) => {
-        if (prev.gameOver) {
-          return prev;
-        }
+    if (!isBroken) return undefined;
 
-        const movedBullets = prev.bullets
-          .map((bullet) => ({ ...bullet, y: bullet.y - 4 }))
-          .filter((bullet) => bullet.y > -4);
+    const onPointerMove = (event) => {
+      if (!dragRef.current) return;
 
-        let score = prev.score;
-        let lives = prev.lives;
+      const drag = dragRef.current;
+      const idx = bodiesRef.current.findIndex((body) => body.id === drag.id);
+      if (idx === -1) return;
 
-        const nextEnemies = prev.enemies.map((enemy) => {
-          const nextEnemy = { ...enemy, y: enemy.y + enemy.speed };
+      const now = performance.now();
+      const dt = Math.max((now - drag.lastT) / 1000, 0.001);
+      const nx = event.clientX - drag.dx;
+      const ny = event.clientY - drag.dy;
 
-          const hitBulletIndex = movedBullets.findIndex(
-            (bullet) => Math.abs(bullet.x - nextEnemy.x) < 4 && Math.abs(bullet.y - nextEnemy.y) < 5
-          );
+      const body = bodiesRef.current[idx];
+      body.x = Math.max(0, Math.min(window.innerWidth - body.w, nx));
+      body.y = Math.max(0, Math.min(window.innerHeight - body.h, ny));
+      body.vx = 0;
+      body.vy = 0;
 
-          if (hitBulletIndex !== -1) {
-            movedBullets.splice(hitBulletIndex, 1);
-            score += 10;
-            return createEnemy(-12);
-          }
+      drag.vx = (event.clientX - drag.lastX) / dt;
+      drag.vy = (event.clientY - drag.lastY) / dt;
+      drag.lastX = event.clientX;
+      drag.lastY = event.clientY;
+      drag.lastT = now;
 
-          if (nextEnemy.y > 100 || (nextEnemy.y > 88 && Math.abs(nextEnemy.x - prev.shipX) < 6)) {
-            lives -= 1;
-            return createEnemy(-18);
-          }
+      setBodies([...bodiesRef.current]);
+    };
 
-          return nextEnemy;
-        });
+    const onPointerUp = () => {
+      if (!dragRef.current) return;
 
-        const safeLives = Math.max(lives, 0);
+      const drag = dragRef.current;
+      const idx = bodiesRef.current.findIndex((body) => body.id === drag.id);
+      if (idx !== -1) {
+        bodiesRef.current[idx].vx = drag.vx * 0.08;
+        bodiesRef.current[idx].vy = drag.vy * 0.08;
+      }
 
-        return {
-          ...prev,
-          bullets: movedBullets,
-          enemies: nextEnemies,
-          score,
-          lives: safeLives,
-          gameOver: safeLives === 0,
-        };
-      });
-    }, 60);
+      dragRef.current = null;
+    };
 
-    return () => clearInterval(timer);
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
+
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
+    };
+  }, [isBroken]);
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
   return (
     <main className="dev-page">
-      <section className="dev-shell">
+      <section className={`dev-shell ${isBroken ? 'is-broken' : ''}`}>
         <Link to="/" className="dev-back-link">
           Back to main site
         </Link>
 
         <h1>Developer Den</h1>
-        <p className="dev-subtitle">
-          You found the easter egg. This page is intentionally frontend-only and fully hardcoded.
+        <p className={`dev-break-warning ${isBroken ? 'visible' : ''}`}>
+          oh no, you broke the website, i warned you it is held together wo hopes, dreams and glue
         </p>
 
-        <div className="dev-grid">
-          <article className="dev-card">
-            <h2>Mini Game: Retro Space Shooter</h2>
-            <p>Move with Left/Right (or A/D) and shoot with Space.</p>
-
-            <div className="shooter-board" role="region" aria-label="Retro space shooter board">
-              {game.enemies.map((enemy) => (
-                <span
-                  key={enemy.id}
-                  className="enemy-sprite"
-                  style={{ left: `${enemy.x}%`, top: `${enemy.y}%` }}
-                >
-                  M
-                </span>
-              ))}
-
-              {game.bullets.map((bullet) => (
-                <span
-                  key={bullet.id}
-                  className="bullet-sprite"
-                  style={{ left: `${bullet.x}%`, top: `${bullet.y}%` }}
-                >
-                  |
-                </span>
-              ))}
-
-              <span className="ship-sprite" style={{ left: `${game.shipX}%` }}>
-                A
-              </span>
-
-              {game.gameOver && <div className="game-over-overlay">GAME OVER</div>}
-            </div>
-
-            <div className="shooter-hud">
-              <span>Score: {game.score}</span>
-              <span>Lives: {game.lives}</span>
-            </div>
-
-            <div className="shooter-controls">
-              <button type="button" onClick={() => moveShip(-6)} aria-label="Move left">
-                <span className="control-icon" aria-hidden="true">
-                  ◀
-                </span>
-              </button>
-              <button type="button" onClick={shoot} aria-label="Shoot">
-                <span className="control-icon" aria-hidden="true">
-                  𖦏
-                </span>
-              </button>
-              <button type="button" onClick={() => moveShip(6)} aria-label="Move right">
-                <span className="control-icon" aria-hidden="true">
-                  ▶
-                </span>
-              </button>
-              <button type="button" onClick={resetGame} aria-label="Restart game">
-                <span className="control-icon" aria-hidden="true">
-                  ↺
-                </span>
-              </button>
-            </div>
-          </article>
-
-          <article className="dev-card">
-            <h2>Tech Stack</h2>
-            <ul>
-              {techStack.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </article>
-
-          <article className="dev-card">
-            <h2>Contributors</h2>
-            <ul>
-              {contributors.map((person) => (
-                <li key={person.name}>
-                  <strong>{person.name}</strong>: {person.role}
-                </li>
-              ))}
-            </ul>
-          </article>
-
-          <article className="dev-card">
-            <h2>Note</h2>
-            <p>
-              If you are reading this, you are the kind of person who clicks footer text and inspects
-              source. That is exactly how we started. Godspeed.
-            </p>
-          </article>
+        <div className={`dev-grid ${isBroken ? 'dev-grid--broken' : ''}`}>
+          {CARD_DEFS.map((card) => (
+            <article
+              key={card.id}
+              ref={(node) => setCardRef(card.id, node)}
+              className="dev-card"
+              onClick={() => breakWebsite(card.id)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  breakWebsite(card.id);
+                }
+              }}
+            >
+              <h2>{card.title}</h2>
+              {renderCardBody(card.id)}
+            </article>
+          ))}
         </div>
       </section>
+
+      {isBroken && (
+        <div className="dev-fall-overlay" aria-hidden="true">
+          {bodies.map((body) => {
+            const card = CARD_DEFS.find((item) => item.id === body.id);
+            if (!card) return null;
+
+            return (
+              <article
+                key={body.id}
+                className="dev-card dev-falling-card"
+                style={{
+                  width: `${body.w}px`,
+                  height: `${body.h}px`,
+                  transform: `translate(${body.x}px, ${body.y}px)`,
+                }}
+                onPointerDown={(event) => onPointerDownCard(body.id, event)}
+              >
+                <h2>{card.title}</h2>
+                {renderCardBody(card.id)}
+              </article>
+            );
+          })}
+        </div>
+      )}
     </main>
   );
 }
