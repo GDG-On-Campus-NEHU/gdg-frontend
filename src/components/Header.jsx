@@ -159,7 +159,7 @@ function Header() {
               alt="GDGOC NEHU logo"
             />
             <span className="brand-full">GDG On Campus NEHU</span>
-            <span className="brand-short">GDGOC NEHU</span>
+            <span className="brand-short">GDGoC NEHU</span>
           </Link>
         </div>
 
