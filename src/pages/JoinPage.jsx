@@ -1,30 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Linkedin, Instagram, Github, Globe } from 'lucide-react';
 import { CLUB_INFO, SOCIAL_LINKS } from '../config/siteLinks';
 
-const activityItems = [
-  {
-    activity: 'Technical Workshops',
-    details: 'Deep dives into Google Cloud, Android, AI (Gemini), Web, and Firebase.',
-  },
-  {
-    activity: 'Study Jams',
-    details: 'Collective learning journeys through structured Google Cloud and AI tracks.',
-  },
-  {
-    activity: 'Hackathons',
-    details: 'Rapid prototyping sessions to turn wild ideas into functional solutions.',
-  },
-  {
-    activity: 'Open Source',
-    details: 'Real-world project collaboration to beef up your GitHub and portfolio.',
-  },
-  {
-    activity: 'Speaker Sessions',
-    details: 'Direct insights from Google Developer Experts (GDEs) and industry pros.',
-  },
-];
+function SocialLinkIcon({ socialKey }) {
+  if (socialKey === 'whatsapp') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
+        <path
+          fill="currentColor"
+          d="M12.05 2C6.58 2 2.13 6.45 2.13 11.92c0 1.75.46 3.45 1.32 4.95L2 22l5.24-1.38a9.86 9.86 0 0 0 4.81 1.24h.01c5.47 0 9.92-4.45 9.92-9.92A9.84 9.84 0 0 0 12.05 2Zm0 18.18h-.01a8.2 8.2 0 0 1-4.17-1.14l-.3-.18-3.11.82.83-3.03-.2-.31a8.17 8.17 0 0 1-1.25-4.36c0-4.52 3.68-8.2 8.21-8.2 2.19 0 4.25.85 5.8 2.4a8.15 8.15 0 0 1 2.4 5.8c0 4.52-3.68 8.2-8.2 8.2Zm4.5-6.16c-.25-.12-1.47-.72-1.7-.8-.23-.08-.4-.13-.57.12-.17.26-.65.82-.8.98-.14.17-.3.2-.56.07-.25-.13-1.07-.4-2.05-1.27-.76-.68-1.27-1.52-1.42-1.77-.15-.25-.02-.39.11-.52.12-.12.25-.3.38-.46.12-.14.17-.25.25-.42.08-.17.04-.3-.02-.43-.06-.13-.57-1.38-.78-1.88-.2-.49-.4-.43-.57-.44h-.49c-.17 0-.44.06-.68.31-.23.25-.89.87-.89 2.13s.91 2.48 1.04 2.65c.13.17 1.78 2.72 4.31 3.8.61.27 1.07.43 1.45.55.59.18 1.14.15 1.57.09.48-.07 1.47-.6 1.69-1.18.21-.58.21-1.07.15-1.18-.07-.1-.23-.17-.48-.3Z"
+        />
+      </svg>
+    );
+  }
+
+  if (socialKey === 'linkedin') return <Linkedin size={16} aria-hidden="true" />;
+  if (socialKey === 'instagram') return <Instagram size={16} aria-hidden="true" />;
+  return <Github size={16} aria-hidden="true" />;
+}
 
 function JoinPage() {
   return (
@@ -82,46 +76,26 @@ function JoinPage() {
       </section>
 
       <section className="join-section">
-        <h2>What&apos;s In Store?</h2>
-        <div className="join-table-wrap">
-          <table className="join-table">
-            <thead>
-              <tr>
-                <th>Activity</th>
-                <th>What to Expect</th>
-              </tr>
-            </thead>
-            <tbody>
-              {activityItems.map((item) => (
-                <tr key={item.activity}>
-                  <td>{item.activity}</td>
-                  <td>{item.details}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="join-section">
         <h2>Is This For You?</h2>
         <p>
-          Short answer: Yes. Whether you are writing your first line of code in Python or optimizing
-          complex backend architectures, there is a seat at the table for you. We value curiosity over
-          expertise and consistency over perfection.
+          Short answer: Yes. Whether you are exploring your first technology concept or already
+          building advanced solutions in your domain, there is a place for you here. We welcome
+          students from all academic backgrounds, including non-engineering branches. Our only
+          criterion is passion for technology. We value curiosity, collaboration, and consistency
+          over perfection.
         </p>
         <div className="join-personas">
           <article className="join-persona">
             <h3>The Beginner</h3>
-            <p>Starting your journey with Web or App development.</p>
+            <p>Starting your journey and building confidence through practical learning.</p>
           </article>
           <article className="join-persona">
             <h3>The Specialist</h3>
-            <p>Deep-diving into ML, DevOps, or Cloud.</p>
+            <p>Deep-diving into your chosen field and sharpening advanced technical skills.</p>
           </article>
           <article className="join-persona">
             <h3>The Leader</h3>
-            <p>Looking to manage projects and inspire others.</p>
+            <p>Ready to lead teams, manage projects, and inspire peers across disciplines.</p>
           </article>
         </div>
       </section>
@@ -140,19 +114,27 @@ function JoinPage() {
         <h2>Stay Connected</h2>
         <p>Don&apos;t miss an update. Follow our journey and join the conversation.</p>
         <div className="join-links-grid">
-          {SOCIAL_LINKS.map((item) => (
-            <a key={item.key} href={item.url} target="_blank" rel="noopener noreferrer" className="join-link-card">
-              <span>{item.label}</span>
-              <ExternalLink size={16} aria-hidden="true" />
-            </a>
-          ))}
+          {SOCIAL_LINKS.map((item) => {
+            return (
+              <a key={item.key} href={item.url} target="_blank" rel="noopener noreferrer" className="join-link-card">
+                <span className="join-link-label">
+                  <SocialLinkIcon socialKey={item.key} />
+                  <span>{item.label}</span>
+                </span>
+                <ExternalLink size={16} aria-hidden="true" />
+              </a>
+            );
+          })}
           <a
             href={CLUB_INFO.communityPortal}
             target="_blank"
             rel="noopener noreferrer"
             className="join-link-card join-link-card--primary"
           >
-            <span>Community Portal</span>
+            <span className="join-link-label">
+              <Globe size={16} aria-hidden="true" />
+              <span>Community Portal</span>
+            </span>
             <ExternalLink size={16} aria-hidden="true" />
           </a>
         </div>

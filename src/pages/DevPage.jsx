@@ -14,7 +14,7 @@ const techStack = [
 
 const contributors = [
   { name: 'Rohit K. Shaw', role: 'Frontend, Backend, Design' },
-  { name: 'GDG NEHU Core Team', role: 'Content, QA and Club Operations' },
+  { name: 'GDGOC NEHU Core Team', role: 'Content, QA and Club Operations' },
   { name: 'Want to contribute?', role: 'Head on over to our Github' },
 ];
 
@@ -330,3 +330,4 @@ export default function DevPage() {
     </main>
   );
 }
+

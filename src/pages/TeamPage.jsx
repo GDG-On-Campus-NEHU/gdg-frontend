@@ -16,7 +16,7 @@ function TeamPage() {
     <main className="page-container">
       <div className="page-header">
         <h1 className="page-title">The Core Team</h1>
-        <p className="page-subtitle">The passionate individuals driving GDG NEHU's mission and activities.</p>
+        <p className="page-subtitle">The passionate individuals driving GDGOC NEHU's mission and activities.</p>
       </div>
       
       <div className="grid-layout team-grid">
@@ -37,3 +37,4 @@ function TeamPage() {
 }
 
 export default TeamPage;
+

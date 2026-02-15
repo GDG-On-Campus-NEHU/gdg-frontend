@@ -55,7 +55,7 @@ function BlogPage() {
               {heroPost?.title || "Latest from Google Developer's Group, NEHU"}
             </h1>
             <p className="blog-hero-dek">
-              {heroPost?.summary || "Stories, tutorials, and experiments from the GDG NEHU community."}
+              {heroPost?.summary || "Stories, tutorials, and experiments from the GDGOC NEHU community."}
             </p>
             {(heroPost?.author_name || heroPost?.published_date) && (
               <p className="blog-hero-meta">

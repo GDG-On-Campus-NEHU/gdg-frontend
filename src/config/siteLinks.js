@@ -1,10 +1,10 @@
 export const CLUB_INFO = {
-  name: "Google Developer's Group",
-  shortName: 'GDG NEHU',
+  name: "Google Developer's Group • On Campus, North-Eastern Hill University",
+  shortName: 'GDGOC NEHU',
   email: 'gdgnehu@gmail.com',
   address: 'School of Technology, North-Eastern University',
   communityPortal: 'https://gdg.community.dev/gdg-on-campus-north-eastern-hill-university-shillong-india/',
-  developedBy: 'Developed and maintained by GDG NEHU',
+  developedBy: 'Developed and maintained by GDGOC NEHU',
 };
 
 export const SOCIAL_LINKS = [
@@ -29,4 +29,5 @@ export const SOCIAL_LINKS = [
     url: 'https://github.com/',
   },
 ];
+
 

@@ -18,7 +18,7 @@ function TeamSection() {
       id="team"
       eyebrow="PEOPLE"
       title="Meet the Core Team"
-      subtitle="The passionate individuals driving GDG NEHU's mission and activities."
+      subtitle="The passionate individuals driving GDGOC NEHU's mission and activities."
     >
       <div className="grid-layout team-grid">
         {teamMembers.slice(0, 4).map((member, index) => (
@@ -41,4 +41,5 @@ function TeamSection() {
 }
 
 export default TeamSection;
+
 

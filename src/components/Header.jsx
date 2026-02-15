@@ -156,10 +156,10 @@ function Header() {
             <img
               className="logo-mark"
               src="/GDG-Sticker-Brackets.gif"
-              alt="GDG NEHU logo"
+              alt="GDGOC NEHU logo"
             />
-            <span className="brand-full">Google Developer's Group, NEHU</span>
-            <span className="brand-short">GDG NEHU</span>
+            <span className="brand-full">GDG On Campus NEHU</span>
+            <span className="brand-short">GDGOC NEHU</span>
           </Link>
         </div>
 
@@ -314,3 +314,4 @@ function Header() {
 }
 
 export default Header;
+
