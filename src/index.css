@@ -323,10 +323,17 @@ body[data-theme="dark"] .footer-social-link {
 
 .brand-short { display: none; }
 @media (max-width: 768px) {
-  .logo a { transform: translateY(3px); }
+  .logo a { transform: translateY(3px); gap: 0.45rem; }
   .logo-mark { width: 52px; height: 52px; border-radius: 8px; }
+  .logo { min-width: 0; }
   .brand-full { display: none; }
-  .brand-short { display: inline; }
+  .brand-short {
+    display: inline-block;
+    white-space: nowrap;
+    font-size: clamp(1.06rem, 4.9vw, 1.26rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
 }
 
 .nav-links { list-style: none; display: flex; align-items: center; gap: 2rem; font-size: 0.95rem; font-weight: 500; }
