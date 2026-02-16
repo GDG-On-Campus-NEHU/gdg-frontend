@@ -1312,6 +1312,17 @@ body[data-theme="dark"] .hero-cta:hover {
     display: none;
   }
 
+  .roadmap-map-shell {
+    overflow-x: clip;
+  }
+
+  .roadmap-map .roadmap-hero-line,
+  .roadmap-map .roadmap-content-line,
+  .roadmap-map .roadmap-connector,
+  .roadmap-map .connector-meeting-dot-html {
+    display: none !important;
+  }
+
   /* Reset padding for the container */
   .roadmap-map .page-container {
     padding-left: 1.5rem;
@@ -1330,6 +1341,41 @@ body[data-theme="dark"] .hero-cta:hover {
   .roadmap-map .blog-post-content h2,
   .roadmap-map .blog-post-content h3 {
     padding-left: 0;
+  }
+
+  .roadmap-map .roadmap-map-content,
+  .roadmap-map .roadmap-detail-layout,
+  .roadmap-map .blog-post-container,
+  .roadmap-map .blog-post-content {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .roadmap-map .blog-post-content {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .roadmap-map .blog-post-content img,
+  .roadmap-map .blog-post-content video,
+  .roadmap-map .blog-post-content iframe,
+  .roadmap-map .blog-post-content canvas,
+  .roadmap-map .blog-post-content svg {
+    max-width: 100% !important;
+  }
+
+  .roadmap-map .blog-post-content pre,
+  .roadmap-map .blog-post-content figure.table,
+  .roadmap-map .blog-post-content .raw-html-embed {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .roadmap-map .blog-post-content ul,
+  .roadmap-map .blog-post-content ol {
+    margin-left: 1rem;
+    padding-left: 0.6rem;
   }
   
   /* Adjust Hero Padding */
