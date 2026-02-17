@@ -1,19 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Section from './Section';
 import GlassCard from './GlassCard';
-import { apiFetch } from '../api';
 
-function ProjectsSection() {
-  const [projects, setProjects] = useState([]);
+function ProjectsSection({ projects = [], loading = false }) {
   const getTagName = (tag) => (typeof tag === 'string' ? tag : tag?.name);
-
-  useEffect(() => {
-    apiFetch('/api/projects/')
-      .then(response => response.json())
-      .then(data => setProjects(data))
-      .catch(error => console.error('Error fetching projects:', error));
-  }, []);
+  const showProjects = projects.slice(0, 3);
 
   return (
     <Section
@@ -23,7 +15,7 @@ function ProjectsSection() {
       subtitle="From autonomous robots to smart IoT devices, our projects are a testament to our passion for innovation."
     >
       <div className="grid-layout">
-        {projects.slice(0, 3).map((project, index) => (
+        {showProjects.map((project, index) => (
           <Link to={`/projects/${project.id}`} key={project.id} className="card-link">
             <GlassCard
               imgSrc={project.image_url}
@@ -35,6 +27,7 @@ function ProjectsSection() {
             />
           </Link>
         ))}
+        {!showProjects.length && loading && <div className="muted">Loading projects...</div>}
       </div>
       <div className="see-more-container">
         <Link to="/projects" className="see-more-button">See All Projects</Link>

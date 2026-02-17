@@ -1,17 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Section from './Section';
-import { apiFetch } from '../api';
 
-function TeamSection() {
-  const [teamMembers, setTeamMembers] = useState([]);
-
-  useEffect(() => {
-    apiFetch('/api/team/')
-      .then(response => response.json())
-      .then(data => setTeamMembers(data))
-      .catch(error => console.error('Error fetching team members:', error));
-  }, []);
+function TeamSection({ teamMembers = [], loading = false }) {
+  const showTeamMembers = teamMembers.slice(0, 4);
 
   return (
     <Section
@@ -21,7 +13,7 @@ function TeamSection() {
       subtitle="The passionate individuals driving GDGOC NEHU's mission and activities."
     >
       <div className="grid-layout team-grid">
-        {teamMembers.slice(0, 4).map((member, index) => (
+        {showTeamMembers.map((member, index) => (
           <Link
             key={member.id}
             to={`/team/${member.id}`}
@@ -32,6 +24,7 @@ function TeamSection() {
             <p>{member.role}</p>
           </Link>
         ))}
+        {!showTeamMembers.length && loading && <div className="muted">Loading team...</div>}
       </div>
       <div className="see-more-container">
         <Link to="/team" className="see-more-button">See All Members</Link>

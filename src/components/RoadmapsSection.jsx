@@ -1,17 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Section from './Section';
-import { apiFetch } from '../api';
 
-function RoadmapsSection() {
-  const [roadmaps, setRoadmaps] = useState([]);
-
-  useEffect(() => {
-    apiFetch('/api/roadmaps/')
-      .then(response => response.json())
-      .then(data => setRoadmaps(data))
-      .catch(error => console.error('Error fetching roadmaps:', error));
-  }, []);
+function RoadmapsSection({ roadmaps = [], loading = false }) {
+  const showRoadmaps = roadmaps.slice(0, 3);
 
   return (
     <Section
@@ -21,7 +13,7 @@ function RoadmapsSection() {
       subtitle="Curated learning paths to guide you from beginner to expert in key electronics domains."
     >
       <div className="grid-layout">
-        {roadmaps.slice(0, 3).map((roadmap, index) => (
+        {showRoadmaps.map((roadmap, index) => (
           <Link
             key={roadmap.id}
             to={`/roadmaps/${roadmap.id}`}
@@ -30,11 +22,12 @@ function RoadmapsSection() {
             <div className="icon">{roadmap.icon_name}</div>
             <h3>{roadmap.title}</h3>
             <p>{roadmap.description}</p>
-            <span className="cta-link">Start Learning →</span>
+            <span className="cta-link">Start Learning -&gt;</span>
           </Link>
         ))}
+        {!showRoadmaps.length && loading && <div className="muted">Loading roadmaps...</div>}
       </div>
-       <div className="see-more-container">
+      <div className="see-more-container">
         <Link to="/roadmaps" className="see-more-button">See All Roadmaps</Link>
       </div>
     </Section>
@@ -42,4 +35,3 @@ function RoadmapsSection() {
 }
 
 export default RoadmapsSection;
-
