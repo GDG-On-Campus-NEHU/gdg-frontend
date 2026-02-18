@@ -26,7 +26,7 @@ export const SOCIAL_LINKS = [
   {
     key: 'github',
     label: 'GitHub',
-    url: 'https://github.com/',
+    url: 'https://github.com/GDG-On-Campus-NEHU',
   },
 ];
 

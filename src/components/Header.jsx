@@ -164,6 +164,7 @@ function Header() {
         </div>
 
         <ul className="nav-links">
+          <li><Link to="/">Home</Link></li>
           <li><Link to="/projects">Projects</Link></li>
           <li><Link to="/blog">Blog</Link></li>
           <li><Link to="/events">Events</Link></li>
@@ -302,6 +303,7 @@ function Header() {
           </span>
         </button>
         <div className="mobile-fab-links">
+          <Link to="/" onClick={toggleMenu}>Home</Link>
           <Link to="/projects" onClick={toggleMenu}>Projects</Link>
           <Link to="/blog" onClick={toggleMenu}>Blog</Link>
           <Link to="/events" onClick={toggleMenu}>Events</Link>

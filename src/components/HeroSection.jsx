@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 function HeroSection() {
   const [pillText, setPillText] = useState("Weekly Blogs");
@@ -32,11 +33,11 @@ function HeroSection() {
             <a href="#tags" className="hero-ghost">Browse Topics</a>
           </div>
         </div>
-        <div className="hero-visual" aria-hidden="true">
+        <div className="hero-visual">
           <div className="hero-blob blob-blue"></div>
           <div className="hero-blob blob-pink"></div>
           <div className="hero-blob blob-yellow"></div>
-          <div className="hero-pill">Join our community</div>
+          <Link to="/join" className="hero-pill">Join our community</Link>
           <div key={pillText} className="hero-pill alt animate-pop-in">{pillText}</div>
         </div>
       </div>

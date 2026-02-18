@@ -12,7 +12,7 @@ function ProjectsSection({ projects = [], loading = false }) {
       id="projects"
       eyebrow="FEATURED"
       title="What We Build"
-      subtitle="From autonomous robots to smart IoT devices, our projects are a testament to our passion for innovation."
+      subtitle="From electronics prototypes to impactful software, our projects reflect our shared drive to learn, build, and innovate."
     >
       <div className="grid-layout">
         {showProjects.map((project, index) => (

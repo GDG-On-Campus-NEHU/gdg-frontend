@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route, useLocation, useNavigationType } from 'react-router-dom';
 import Header from './components/Header';
 import BlogDetailPage from './components/BlogDetailPage';
@@ -17,6 +17,7 @@ import Footer from './components/Footer';
 import DevPage from './pages/DevPage';
 import NotFoundPage from './pages/NotFoundPage';
 import JoinPage from './pages/JoinPage';
+import { subscribeToGlobalLoading } from './api';
 
 function ScrollRestorationHandler() {
   const location = useLocation();
@@ -50,6 +51,13 @@ function ScrollRestorationHandler() {
 }
 
 function App() {
+  const [isGlobalLoading, setIsGlobalLoading] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToGlobalLoading(setIsGlobalLoading);
+    return unsubscribe;
+  }, []);
+
   return (
     <>
       <ScrollRestorationHandler />
@@ -57,6 +65,16 @@ function App() {
         <div className="background-gradient"></div>
       </div>
       <Header />
+      {isGlobalLoading && (
+        <div className="global-loading-overlay" role="status" aria-live="polite" aria-label="Loading content">
+          <img
+            src="/GDG-Sticker-Brackets.gif"
+            alt="GDG loading"
+            className="global-loading-gif"
+          />
+          <p className="global-loading-text">Loading..</p>
+        </div>
+      )}
 
       <Routes>
         <Route path="/" element={<HomePage />} />
