@@ -1,52 +1,81 @@
-# Google Developer's Group, NEHU Frontend
+# GDG On Campus NEHU Frontend
 
-Frontend for the Google Developer's Group (GDG) NEHU website. Built with React, Vite, and React Router.
+React + Vite frontend for the GDG On Campus NEHU website.
 
-## Quick Start
+Owner: GDGOC NEHU frontend maintainers  
+Last updated: 2026-02-18
+
+## Documentation Map
+
+Use `docs/INDEX.md` as the main entry point for all maintainer docs.
+
+## Architecture At A Glance
+
+- Framework: React 19 + React Router 7 + Vite 7
+- Styling: vanilla CSS in `src/index.css`
+- API access: centralized in `src/api.js` via `apiFetch`
+- Content sanitization: `dompurify` for rich HTML detail pages
+- Deployment target: Cloudflare Pages (`wrangler.json`)
+
+## Golden Path (Clone To Running)
 
 ```bash
 npm install
 npm run dev
 ```
 
-The app runs on `http://localhost:5173` by default.
+Open `http://localhost:5173`.
 
-## Environment and Configuration
+## Scripts
 
-API requests currently use `API_BASE_URL = http://127.0.0.1:8000` inside components. If you need a different backend URL, update the constants in the relevant files or switch to environment variables (recommended for deployment).
+- `npm run dev` starts local dev server
+- `npm run build` creates production build in `dist/`
+- `npm run preview` serves built assets locally
+- `npm run lint` runs ESLint
+- `npm run test` runs Vitest tests
 
-Suggested environment variable:
+## Environment Variables
+
+Create `.env` in project root:
 
 ```bash
-VITE_API_BASE_URL=http://127.0.0.1:8000
+VITE_API_BASE_URL=https://your-backend-base-url
+VITE_ENABLE_BOOTSTRAP_LANDING=true
 ```
 
-## API Endpoints Used
+Notes:
 
-These endpoints are expected to be served by the backend:
-
-- `GET /api/blog/`, `GET /api/blog/:id`
-- `GET /api/projects/`, `GET /api/projects/:id`
-- `GET /api/roadmaps/`, `GET /api/roadmaps/:id`
-- `GET /api/team/`, `GET /api/team/:id`
-- `GET /api/events/`
-
-Blog content is rich text HTML (rendered with DOMPurify).
+- `VITE_API_BASE_URL` is required by `src/api.js`.
+- `VITE_ENABLE_BOOTSTRAP_LANDING` is optional. If set to `false`, homepage bootstrap endpoint is skipped.
 
 ## Project Structure
 
-```
+```text
 src/
-	components/   Reusable UI sections and cards
-	pages/        Route-level pages
-	assets/       Static assets
+  components/    reusable UI and detail components
+  pages/         route-level pages
+  config/        static site-level links and club metadata
+  utils/         data loading + content processing helpers
+  api.js         shared fetch wrapper + global loader integration
+docs/
+  *.md           handoff, setup, deploy, ops, security, ADRs
 ```
 
-Routing is defined in `src/App.jsx` using React Router.
+## Primary Routes
 
-## Contributing
+- `/` home
+- `/projects`, `/projects/:projectId`
+- `/blog`, `/blog/:postId`
+- `/events`, `/events/:eventId`
+- `/roadmaps`, `/roadmaps/:roadmapId`
+- `/team`, `/team/:memberId`
+- `/tags/:slug`
+- `/join`
+- `/dev`
+- fallback `*` -> custom 404 page
 
-1. Create a feature branch.
-2. Keep changes focused and consistent with existing styles.
-3. Run the app locally to verify UI changes.
-4. Open a PR with a short summary and screenshots when possible.
+## Handoff Notes
+
+- This repository is frontend only; backend service code is not included here.
+- Rich content pages assume backend returns HTML in fields like `content` or `bio`.
+- Detailed contracts and runbooks are in `docs/`.
