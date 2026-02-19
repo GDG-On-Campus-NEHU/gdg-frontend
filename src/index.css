@@ -742,6 +742,12 @@ body[data-theme="dark"] .card-variant-4 { background: rgba(52, 168, 83, 0.24); }
 .tag { background: #ffffff; color: #111; padding: 0.3rem 0.8rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; border: 2px solid var(--border-color); }
 .roadmap-card { padding: 2rem; display: flex; flex-direction: column; align-items: flex-start; text-align: left; height: 100%; }
 .roadmap-card .icon { font-size: 3rem; margin-bottom: 1rem; line-height: 1; }
+.roadmap-card .icon,
+.launchpad-icon,
+.roadmap-hero-emoji {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  font-variant-emoji: emoji;
+}
 .roadmap-card h3 { font-size: 1.75rem; }
 .roadmap-card .cta-link { margin-top: auto; padding-top: 1rem; font-weight: 700; color: var(--text-color); text-decoration: none; border-bottom: 2px solid var(--text-color); width: fit-content; }
 .team-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
@@ -1087,15 +1093,6 @@ body[data-theme="dark"] .hero-cta:hover {
   fill: none;
 }
 
-.roadmap-map-shell .connector-secondary {
-  stroke-width: 4px;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: 0.98;
-  fill: none;
-}
-/* (SVG meeting-dot removed; using HTML element `.connector-meeting-dot-html`) */
-
 .roadmap-map .roadmap-launchpad-inner {
   padding-left: 2rem;
 }
@@ -1285,38 +1282,12 @@ body[data-theme="dark"] .hero-cta:hover {
   z-index: 10;
 }
 
-/* Reusable meeting dot (same visual as the H2 dot) */
-.connector-meeting-dot-html {
-  --connector-dot-size: 22px;
-  --connector-dot-border: 4px;
-  --connector-dot-ring: 8px;
-  position: absolute;
-  width: var(--connector-dot-size);
-  height: var(--connector-dot-size);
-  background: var(--background-color);
-  border-radius: 50%;
-  border: var(--connector-dot-border) solid var(--card-blue);
-  box-shadow: 0 0 0 var(--connector-dot-ring) var(--background-color);
-  z-index: 30;
-  pointer-events: none;
-  display: none;
-  transition: transform 160ms ease, opacity 180ms ease;
-}
-
-/* Dark-mode tweak uses the same variable colors (var(--card-blue) adapts via theme) */
-
-/* Mobile: smaller dot and hide heavy connector SVG for clarity */
+/* Mobile: hide heavy connector SVG for clarity */
 @media (max-width: 720px) {
-  .connector-meeting-dot-html {
-    --connector-dot-size: 14px;
-    --connector-dot-border: 3px;
-    --connector-dot-ring: 6px;
-  }
   .roadmap-map-shell .roadmap-connector {
     display: none;
   }
-  .roadmap-map-shell .connector-path,
-  .roadmap-map-shell .connector-secondary {
+  .roadmap-map-shell .connector-path {
     stroke-width: 3px;
   }
 }
@@ -1351,8 +1322,7 @@ body[data-theme="dark"] .hero-cta:hover {
 
 @media (max-width: 900px) {
   /* Hide complex curves on mobile */
-  .roadmap-map-line,
-  .roadmap-secondary-line {
+  .roadmap-map-line {
     display: none;
   }
 
@@ -1362,8 +1332,7 @@ body[data-theme="dark"] .hero-cta:hover {
 
   .roadmap-map .roadmap-hero-line,
   .roadmap-map .roadmap-content-line,
-  .roadmap-map .roadmap-connector,
-  .roadmap-map .connector-meeting-dot-html {
+  .roadmap-map .roadmap-connector {
     display: none !important;
   }
 
@@ -1432,9 +1401,6 @@ body[data-theme="dark"] .hero-cta:hover {
   .roadmap-map-line {
      /* If it crashes into text on tablet, better to hide or adjust. 
         For now, let's hide the secondary line on tablets to save space */
-  }
-  .roadmap-secondary-line {
-     display: none;
   }
 }
 
@@ -2255,6 +2221,15 @@ body[data-theme="dark"] .blog-hero-media {
   border-color: rgba(173, 214, 255, 0.24);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+}
+
+/* Keep roadmap detail emoji floating without a dark-mode glass tile */
+body[data-theme="dark"] .roadmap-map .launchpad-card {
+  background: transparent;
+  border-color: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
 }
 
 body[data-theme="dark"] .card-variant-1 {

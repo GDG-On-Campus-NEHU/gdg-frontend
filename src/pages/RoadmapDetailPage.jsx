@@ -156,9 +156,7 @@ function RoadmapDetailPage() {
                 </linearGradient>
               </defs>
                 <path className="connector-path" stroke="url(#connectorGradient)" fill="none" />
-                <path className="connector-secondary" stroke="url(#connectorGradient)" fill="none" />
             </svg>
-              <span className="connector-meeting-dot-html" aria-hidden="true" />
         <section className="roadmap-launchpad">
           <div className="roadmap-launchpad-inner">
             <Link to="/roadmaps" className="launchpad-back">&larr; Back to Roadmaps</Link>
@@ -346,67 +344,6 @@ function useConnectorUpdater() {
       // ensure svg covers shell area (it is absolute inset:0) and set path
       path.setAttribute('d', d);
       path.style.display = '';
-
-      // --- Secondary hero curve: start far left at top of hero, meet a bit above the primary rail start ---
-      const secondary = svg.querySelector('.connector-secondary');
-      const meetingDot = shell.querySelector('.connector-meeting-dot-html');
-      if (secondary && meetingDot) {
-        // start far left inside the shell (24px from shell left)
-        const secStartX = Math.round(80);
-        // start at top of the hero (a few px inset)
-        const secStartY = Math.max(8, Math.round((heroRect.top - shellRect.top) + 8));
-
-        // initial straight drop distance before the curve begins (halved per request)
-        const straightDrop = Math.round(Math.min(420, Math.max(120, heroRect.height * 0.54)) * 0.5);
-        const midY = secStartY + straightDrop;
-
-        // meeting point: a bit above the main connector start to create a 'joining above' effect
-        const meetX = startX;
-        // meet much higher above the primary rail (initial suggestion)
-        let meetY = startY - Math.round(Math.min(200, heroRect.height * 0.6));
-
-        // determine final merge Y (vertical segment end) — align with the hero rail bottom
-        const finalMergeY = startY;
-
-        // enforce a minimum visible vertical segment so the curve clearly has a straight drop
-        // make it scale with the hero height so it remains visible on larger screens
-        const minVertical = Math.min(120, Math.max(36, Math.round(heroRect.height * 0.25)));
-        if (meetY > finalMergeY - minVertical) {
-          meetY = finalMergeY - minVertical;
-        }
-
-        // construct a path that goes straight down then transitions into a curve
-        const secC1x = secStartX;
-        const secC1y = midY + Math.round(Math.max(20, (meetY - midY) * 0.25));
-        const secC2x = meetX - Math.round(40);
-        const secC2y = meetY - Math.round(Math.max(20, (meetY - midY) * 0.25));
-
-        // Path: move to start, vertical line to midY, then cubic bezier to meeting point
-        // then finish with a short vertical line to sit on top of the hero rail (final merge)
-        const sd = `M ${secStartX} ${secStartY} L ${secStartX} ${midY} C ${secC1x} ${secC1y} ${secC2x} ${secC2y} ${meetX} ${meetY} L ${meetX} ${finalMergeY}`;
-        // validate numeric coordinates before applying
-        const nums = [secStartX, secStartY, midY, secC1x, secC1y, secC2x, secC2y, meetX, meetY, finalMergeY];
-        const allFinite = nums.every((n) => Number.isFinite(n));
-        if (allFinite) {
-          secondary.setAttribute('d', sd);
-          secondary.style.display = '';
-        } else {
-          // fallback: draw a visible vertical line so we can at least see the rail
-          const fallbackD = `M ${secStartX} ${secStartY} L ${secStartX} ${Math.max(secStartY + 40, finalMergeY || secStartY + 120)}`;
-          secondary.setAttribute('d', fallbackD);
-          secondary.style.display = '';
-          secondary.setAttribute('stroke', '#F783CF');
-          secondary.setAttribute('stroke-width', '4');
-        }
-
-        // position the HTML meeting dot centered at the curve meeting point and ensure visible
-        const cs = getComputedStyle(meetingDot);
-        const dotSize = parseFloat(cs.width) || parseFloat(cs.height) || 16;
-        const dotRadius = Math.round(dotSize / 2);
-        meetingDot.style.left = `${Math.round(meetX - dotRadius)}px`;
-        meetingDot.style.top = `${Math.round(meetY - dotRadius)}px`;
-        meetingDot.style.display = 'block';
-      }
     };
 
     updateConnector();

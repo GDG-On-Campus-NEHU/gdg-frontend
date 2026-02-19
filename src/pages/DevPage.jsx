@@ -2,18 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const techStack = [
-  'React (Vite) - Deployed on Cloudflare Pages',
-  'React Router',
-  'Vanilla CSS',
-  'JavaScript ( obviously ;) )',
-  'Python (Django REST Framework) on the backend',
-  'Hopes and Dreams',
-  'ChatGPT',
-  'Glue',
+  'Frontend: React (Vite) + Vanilla CSS',
+  'Backend: Python (Django REST Framework)',
+  'Infrastructure: Cloudflare Pages & Workers — Edge-optimized for 200ms latency.',
+  'Deployment: Northflank',
+  'Core Ingredients: JavaScript, Hopes, Dreams, ChatGPT, Gemini and a surprising amount of Cloudflare Glue.',
 ];
 
 const contributors = [
-  { name: 'Rohit K. Shaw', role: 'Frontend, Backend, Design' },
+  { name: 'Rohit K. Shaw', role: 'Development, Architecture, UI/UX & Deployment' },
   { name: 'GDGOC NEHU Core Team', role: 'Content, QA and Club Operations' },
   { name: 'Want to contribute?', role: 'Head on over to our Github' },
 ];
