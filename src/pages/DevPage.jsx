@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const techStack = [
   'Frontend: React (Vite) + Vanilla CSS',
   'Backend: Python (Django REST Framework)',
-  'Infrastructure: Cloudflare Pages & Workers — Edge-optimized for 200ms latency.',
+  'Infrastructure: Cloudflare Pages & Workers — Edge-optimized for low latency.',
   'Deployment: Northflank',
   'Core Ingredients: JavaScript, Hopes, Dreams, ChatGPT, Gemini and a surprising amount of Cloudflare Glue.',
 ];
@@ -48,7 +48,7 @@ function renderCardBody(id) {
 
   return (
     <p>
-      this page breaks easily and i dont know to fix it, so dont break and it dont tell anyone
+      this page breaks easily and i dont know to fix it
     </p>
   );
 }
