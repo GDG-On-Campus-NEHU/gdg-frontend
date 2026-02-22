@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Point Google directly to dynamic sitemap
+Sitemap: https://gdgnehu.pages.dev/sitemap.xml
