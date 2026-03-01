@@ -4,7 +4,7 @@ const USE_BOOTSTRAP_ENDPOINT = import.meta.env.VITE_ENABLE_BOOTSTRAP_LANDING !==
 
 /**
  * @typedef {{ id: number|string, name?: string, title?: string, slug?: string, count?: number }} Tag
- * @typedef {{ id: number|string, title?: string, name?: string, summary?: string, description?: string, image_url?: string, photo_url?: string, icon_name?: string, tags?: Array<{name?: string}|string>, event_date?: string, published_date?: string, role?: string }} ItemCard
+ * @typedef {{ id: number|string, title?: string, name?: string, summary?: string, description?: string, image_url?: string, photo_url?: string, icon_name?: string, tags?: Array<{name?: string}|string>, event_date?: string, published_date?: string, role?: string, requires_registration?: boolean, registration_link?: string|null, registration_deadline?: string|null, registration_open?: boolean, mode?: string, location_address?: string, meeting_link?: string }} ItemCard
  * @typedef {{
  *   meta?: { generated_at?: string, source?: string },
  *   tags?: Tag[],
@@ -78,7 +78,7 @@ export const loadLegacyLandingData = async ({ signal } = {}) => {
   const [tagsRaw, tagsPopularRaw, events, projects, blogs, roadmaps, team] = await Promise.all([
     fetchOptionalJson('/api/tags/', signal),
     fetchOptionalJson('/api/tags/popular/', signal),
-    fetchOptionalJson('/api/program/', signal),
+    fetchOptionalJson('/api/events/', signal),
     fetchOptionalJson('/api/projects/', signal),
     fetchOptionalJson('/api/blog/', signal),
     fetchOptionalJson('/api/roadmaps/', signal),

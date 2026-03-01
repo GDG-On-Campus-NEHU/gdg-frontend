@@ -6,9 +6,23 @@ import { ExternalLink } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
 import { apiFetch } from '../api';
 import { processContent } from '../utils/contentProcessor';
+import {
+  formatCalendarDate,
+  formatClockTime,
+  formatDateTime,
+  parseDateValue,
+  resolveRegistrationState,
+} from '../utils/eventRegistration';
 import '../styles/CKEditorContent.css';
 
 const HOUR_MS = 60 * 60 * 1000;
+const ensureExternalUrl = (value) => {
+  if (typeof value !== 'string') return '';
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+};
 
 function IconBadge({ kind }) {
   const iconMap = {
@@ -47,6 +61,13 @@ function IconBadge({ kind }) {
         <path d="M7 8h10M7 12h7M7 16h5" />
       </svg>
     ),
+    registration: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M8 3v4M16 3v4M4 9h16" />
+        <rect x="4" y="5" width="16" height="16" rx="2.5" />
+        <path d="m9.2 13 2 2 3.8-4" />
+      </svg>
+    ),
   };
 
   return (
@@ -68,7 +89,7 @@ function EventDetailPage() {
     setIsLoading(true);
     setErrorMessage('');
 
-    apiFetch(`/api/program/${eventId}/`)
+    apiFetch(`/api/events/${eventId}/`)
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('Request failed'))))
       .then((data) => {
         setEvent(data);
@@ -81,7 +102,7 @@ function EventDetailPage() {
   }, [eventId]);
 
   useEffect(() => {
-    apiFetch('/api/program/')
+    apiFetch('/api/events/')
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('Request failed'))))
       .then((data) => {
         const list = Array.isArray(data) ? data : [];
@@ -94,25 +115,29 @@ function EventDetailPage() {
   }, [eventId]);
 
   const eventDate = useMemo(() => {
-    if (!event?.event_date) return null;
-    const parsed = new Date(event.event_date);
-    return Number.isNaN(parsed.getTime()) ? null : parsed;
+    return parseDateValue(event?.event_date);
   }, [event?.event_date]);
 
-  const formattedDate = eventDate
-    ? eventDate.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    : '';
+  const formattedDate = formatCalendarDate(event?.event_date);
+  const formattedTime = formatClockTime(event?.event_date);
 
-  const formattedTime = eventDate
-    ? eventDate.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-      })
+  const registrationState = useMemo(
+    () => resolveRegistrationState(event),
+    [
+      event?.requires_registration,
+      event?.registration_link,
+      event?.registration_deadline,
+      event?.registration_open,
+    ]
+  );
+  const registrationDeadlineText = registrationState.deadline
+    ? formatDateTime(registrationState.deadline)
     : '';
+  const isRegistrationClosedByTime = Boolean(
+    registrationState.requiresRegistration &&
+    registrationState.deadline &&
+    Date.now() > registrationState.deadline.getTime()
+  );
 
   const contentHtml = event?.content || (event?.summary ? `<p>${event.summary}</p>` : '<p>Details coming soon.</p>');
   const processedContent = processContent(contentHtml);
@@ -128,6 +153,7 @@ function EventDetailPage() {
   const resources = Array.isArray(event?.resources)
     ? event.resources.filter((item) => item && item.label && item.url)
     : [];
+  const meetingUrl = ensureExternalUrl(event?.meeting_link);
   const pageTitle = `${event?.title || 'Event'} | GDGOC NEHU`;
   const pageDescription = event?.short_description || event?.summary || 'Read more on GDGOC NEHU';
   const pageImage = event?.banner_image || event?.image_url || event?.image || 'https://gdgnehu.pages.dev/og-default.png';
@@ -172,23 +198,32 @@ function EventDetailPage() {
       );
     }
 
-    if (isLiveWindow && (mode === 'virtual' || mode === 'hybrid') && event?.meeting_link) {
+    if (isLiveWindow && (mode === 'virtual' || mode === 'hybrid') && meetingUrl) {
       return (
-        <a href={event.meeting_link} target="_blank" rel="noopener noreferrer" className="event-action-btn">
+        <a href={meetingUrl} target="_blank" rel="noopener noreferrer" className="event-action-btn">
           Join Session
         </a>
       );
     }
 
-    if (event?.requires_registration === false) {
+    if (!registrationState.requiresRegistration) {
+      return null;
+    }
+
+    if (isRegistrationClosedByTime && registrationState.linkPresent) {
       return (
-        <button type="button" className="event-action-btn" disabled>
-          Open to All / Walk-in
-        </button>
+        <>
+          <button type="button" className="event-action-btn" disabled>
+            Registration Closed
+          </button>
+          {registrationDeadlineText && (
+            <p className="event-action-note">Registration closed on {registrationDeadlineText}</p>
+          )}
+        </>
       );
     }
 
-    if (event?.registration_link) {
+    if (registrationState.isOpen && registrationState.linkPresent) {
       return (
         <a href={event.registration_link} target="_blank" rel="noopener noreferrer" className="event-action-btn">
           Register Now
@@ -196,10 +231,23 @@ function EventDetailPage() {
       );
     }
 
+    if (!registrationState.linkPresent) {
+      return (
+        <button type="button" className="event-action-btn" disabled>
+          Registration Unavailable
+        </button>
+      );
+    }
+
     return (
-      <button type="button" className="event-action-btn" disabled>
-        Register Now
-      </button>
+      <>
+        <button type="button" className="event-action-btn" disabled>
+          Registration Closed
+        </button>
+        {registrationDeadlineText && (
+          <p className="event-action-note">Registration closed on {registrationDeadlineText}</p>
+        )}
+      </>
     );
   };
 
@@ -214,6 +262,7 @@ function EventDetailPage() {
   const galleryImages = Array.isArray(event?.gallery_images)
     ? event.gallery_images.filter((url) => typeof url === 'string' && url.trim().length > 0)
     : [];
+  const actionContent = renderActionButton();
 
   if (isLoading) {
     return (
@@ -377,6 +426,30 @@ function EventDetailPage() {
               </div>
             </div>
 
+            {registrationState.requiresRegistration && (
+              <div className="event-info-row">
+                <IconBadge kind="registration" />
+                <div>
+                  <p className="event-info-label">Registration</p>
+                  <p className="event-info-value">
+                    {registrationState.isOpen ? 'Open' : 'Closed'}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {registrationState.requiresRegistration && (
+              <div className="event-info-row">
+                <IconBadge kind="date" />
+                <div>
+                  <p className="event-info-label">Registration Deadline</p>
+                  <p className="event-info-value">
+                    {registrationDeadlineText || 'Not announced'}
+                  </p>
+                </div>
+              </div>
+            )}
+
             {(mode === 'physical' || mode === 'hybrid') && (
               <div className="event-info-row">
                 <IconBadge kind="location" />
@@ -394,7 +467,7 @@ function EventDetailPage() {
                   <p className="event-info-label">Meeting Link</p>
                   {event?.meeting_link ? (
                     <a
-                      href={event.meeting_link}
+                      href={meetingUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="event-inline-link"
@@ -408,7 +481,7 @@ function EventDetailPage() {
               </div>
             )}
 
-            <div className="event-action-wrap">{renderActionButton()}</div>
+            {actionContent && <div className="event-action-wrap">{actionContent}</div>}
           </section>
 
           {techTags.length > 0 && (
@@ -469,7 +542,7 @@ function EventDetailPage() {
               </div>
             </div>
             <div className="grid-layout related-grid">
-              {moreEvents.map((item, index) => (
+              {moreEvents.slice(0, 3).map((item, index) => (
                 <Link to={`/events/${item.id}`} key={item.id} className="card-link">
                   <GlassCard
                     imgSrc={item.image_url}

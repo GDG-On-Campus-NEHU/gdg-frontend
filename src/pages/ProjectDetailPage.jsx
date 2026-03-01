@@ -168,7 +168,7 @@ function ProjectDetailPage() {
                 </div>
               </div>
               <div className="grid-layout related-grid">
-                {moreProjects.map((item, index) => (
+                {moreProjects.slice(0, 3).map((item, index) => (
                   <Link to={`/projects/${item.id}`} key={item.id} className="card-link">
                     <GlassCard
                       imgSrc={item.image_url}

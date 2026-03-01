@@ -18,6 +18,7 @@ import Footer from './components/Footer';
 import DevPage from './pages/DevPage';
 import NotFoundPage from './pages/NotFoundPage';
 import JoinPage from './pages/JoinPage';
+import AdminRedirectPage from './pages/AdminRedirectPage';
 import { subscribeToGlobalLoading } from './api';
 
 function ScrollRestorationHandler() {
@@ -92,6 +93,8 @@ function App() {
           <Route path="/team" element={<TeamPage />} />
           <Route path="/team/:memberId" element={<TeamMemberPage />} />
           <Route path="/join" element={<JoinPage />} />
+          <Route path="/admin" element={<AdminRedirectPage />} />
+          <Route path="/admin/*" element={<AdminRedirectPage />} />
           <Route path="/dev" element={<DevPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

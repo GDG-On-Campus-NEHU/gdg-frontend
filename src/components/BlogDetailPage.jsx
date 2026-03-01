@@ -206,7 +206,7 @@ function BlogDetailPage() {
                 </div>
               </div>
               <div className="grid-layout related-grid">
-                {suggestedPosts.map((relatedPost, index) => (
+                {suggestedPosts.slice(0, 3).map((relatedPost, index) => (
                   <Link to={`/blog/${relatedPost.id}`} key={relatedPost.id} className="card-link">
                     <GlassCard
                       imgSrc={relatedPost.image_url}

@@ -271,7 +271,7 @@ function RoadmapDetailPage() {
                 </div>
               </div>
               <div className="grid-layout related-grid">
-                {moreRoadmaps.map((item, index) => (
+                {moreRoadmaps.slice(0, 3).map((item, index) => (
                   <Link to={`/roadmaps/${item.id}`} key={item.id} className="card-link">
                     <GlassCard
                       imgSrc={item.image_url}

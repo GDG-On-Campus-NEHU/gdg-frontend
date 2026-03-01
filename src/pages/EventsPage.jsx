@@ -2,25 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
 import { apiFetch } from '../api';
+import { formatCalendarDate } from '../utils/eventRegistration';
 
 function EventsPage() {
   const [events, setEvents] = useState([]);
   const heroEvent = events[0];
   const remainingEvents = events.slice(1);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
   const getTagName = (tag) => (typeof tag === 'string' ? tag : tag?.name);
 
   useEffect(() => {
-    apiFetch('/api/program/')
+    apiFetch('/api/events/')
       .then((response) => response.json())
       .then((data) => {
         // Sort newest first so the hero reflects the latest event.
@@ -63,11 +55,20 @@ function EventsPage() {
                   <span className="blog-hero-byline">{heroEvent.location}</span>
                 )}
                 {heroEvent?.event_date && (
-                  <span className="blog-hero-date">{formatDate(heroEvent.event_date)}</span>
+                  <span className="blog-hero-date">{formatCalendarDate(heroEvent.event_date)}</span>
                 )}
               </p>
             )}
             <div className="blog-hero-actions">
+              {heroEvent?.id ? (
+                <Link to={`/events/${heroEvent.id}`} className="blog-hero-button">
+                  View event
+                </Link>
+              ) : (
+                <Link to="/events" className="blog-hero-button">
+                  Explore events
+                </Link>
+              )}
               <Link to="/" className="blog-hero-link">Back to Home</Link>
             </div>
           </div>

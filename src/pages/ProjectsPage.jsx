@@ -5,7 +5,17 @@ import { apiFetch } from '../api';
 
 function ProjectsPage() {
   const [projects, setProjects] = useState([]);
+  const heroProject = projects[0];
+  const remainingProjects = projects.slice(1);
   const getTagName = (tag) => (typeof tag === 'string' ? tag : tag?.name);
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
 
   useEffect(() => {
     apiFetch('/api/projects/')
@@ -15,26 +25,71 @@ function ProjectsPage() {
   }, []);
 
   return (
-    <main className="page-container projects-page">
-      <div className="page-header">
-        <h1 className="page-title">Our Projects</h1>
-        <p className="page-subtitle">A showcase of our members' passion, creativity, and technical skills.</p>
-      </div>
-      
-      <div className="grid-layout">
-        {projects.map(project => (
-          <Link to={`/projects/${project.id}`} key={project.id} className="card-link">
-            <GlassCard
-              imgSrc={project.image_url}
-              title={project.title}
-              description={project.description}
-              tags={(project.tags || []).map(getTagName).filter(Boolean)}
-              date={project.published_date}
-            />
-          </Link>
-        ))}
-      </div>
-      
+    <main className="page-container blog-page projects-page">
+      <section className="blog-hero hero-blue">
+        <div className="blog-hero-inner">
+          <div className="blog-hero-media">
+            {heroProject?.image_url ? (
+              <img src={heroProject.image_url} alt={heroProject.title} />
+            ) : (
+              <div className="blog-hero-placeholder" aria-hidden="true" />
+            )}
+          </div>
+          <div className="blog-hero-content">
+            <div className="blog-hero-tags">
+              {(heroProject?.tags || []).slice(0, 3).map((tag) => (
+                <span key={tag.id || getTagName(tag)} className="blog-hero-tag">
+                  {getTagName(tag)}
+                </span>
+              ))}
+            </div>
+            <h1 className="blog-hero-title">
+              {heroProject?.title || 'Our Projects'}
+            </h1>
+            <p className="blog-hero-dek">
+              {heroProject?.description || 'A showcase of our members\' passion, creativity, and technical skills.'}
+            </p>
+            {heroProject?.published_date && (
+              <p className="blog-hero-meta">
+                <span className="blog-hero-date">{formatDate(heroProject.published_date)}</span>
+              </p>
+            )}
+            <div className="blog-hero-actions">
+              {heroProject?.id ? (
+                <Link to={`/projects/${heroProject.id}`} className="blog-hero-button">
+                  View project
+                </Link>
+              ) : (
+                <Link to="/projects" className="blog-hero-button">
+                  Explore projects
+                </Link>
+              )}
+              <Link to="/" className="blog-hero-link">Back to Home</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="blog-grid-section">
+        <div className="blog-grid-header">
+          <h2>More projects</h2>
+          <p>Build logs, demos, and product ideas from the community.</p>
+        </div>
+        <div className="grid-layout">
+          {remainingProjects.map(project => (
+            <Link to={`/projects/${project.id}`} key={project.id} className="card-link">
+              <GlassCard
+                imgSrc={project.image_url}
+                title={project.title}
+                description={project.description}
+                tags={(project.tags || []).map(getTagName).filter(Boolean)}
+                date={project.published_date}
+              />
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <div className="back-link-container">
         <Link to="/" className="see-more-button">&larr; Back to Home</Link>
       </div>
