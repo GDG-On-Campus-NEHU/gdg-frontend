@@ -27,8 +27,8 @@ function asArray(payload) {
 /**
  * Extracts a unique identifier from an API object.
  */
-function pickId(item) {
-  return item?.id ?? item?.pk ?? item?._id ?? item?.slug ?? null;
+function pickPublicId(item) {
+  return item?.slug ?? item?.id ?? item?.pk ?? item?._id ?? null;
 }
 
 /**
@@ -84,21 +84,21 @@ export async function onRequest() {
 
   // 2. Add Dynamic Events
   for (const event of events) {
-    const id = pickId(event);
-    if (id) urlTags.push(buildUrlTag(`${SITE_URL}/events/${id}`, pickLastModified(event)));
+    const identifier = pickPublicId(event);
+    if (identifier) urlTags.push(buildUrlTag(`${SITE_URL}/events/${identifier}`, pickLastModified(event)));
   }
 
   // 3. Add Dynamic Blogs
   for (const blog of blogs) {
-    const id = pickId(blog);
-    if (id) urlTags.push(buildUrlTag(`${SITE_URL}/blog/${id}`, pickLastModified(blog)));
+    const identifier = pickPublicId(blog);
+    if (identifier) urlTags.push(buildUrlTag(`${SITE_URL}/blog/${identifier}`, pickLastModified(blog)));
   }
 
   // 4. Add Dynamic Projects & Roadmaps
   for (const item of [...projects, ...roadmaps]) {
-    const id = pickId(item);
+    const identifier = pickPublicId(item);
     const type = projects.includes(item) ? 'projects' : 'roadmaps';
-    if (id) urlTags.push(buildUrlTag(`${SITE_URL}/${type}/${id}`, pickLastModified(item)));
+    if (identifier) urlTags.push(buildUrlTag(`${SITE_URL}/${type}/${identifier}`, pickLastModified(item)));
   }
 
   // Construct Final XML

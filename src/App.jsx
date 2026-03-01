@@ -82,16 +82,16 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/:postId" element={<BlogDetailPage />} />
+          <Route path="/blog/:slug" element={<BlogDetailPage />} />
           <Route path="/events" element={<EventsPage />} />
-          <Route path="/events/:eventId" element={<EventDetailPage />} />
+          <Route path="/events/:slug" element={<EventDetailPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/projects/:projectId" element={<ProjectDetailPage />} />
+          <Route path="/projects/:slug" element={<ProjectDetailPage />} />
           <Route path="/roadmaps" element={<RoadmapsPage />} />
-          <Route path="/roadmaps/:roadmapId" element={<RoadmapDetailPage />} />
+          <Route path="/roadmaps/:slug" element={<RoadmapDetailPage />} />
           <Route path="/tags/:slug" element={<TagPage />} />
           <Route path="/team" element={<TeamPage />} />
-          <Route path="/team/:memberId" element={<TeamMemberPage />} />
+          <Route path="/team/:slug" element={<TeamMemberPage />} />
           <Route path="/join" element={<JoinPage />} />
           <Route path="/admin" element={<AdminRedirectPage />} />
           <Route path="/admin/*" element={<AdminRedirectPage />} />

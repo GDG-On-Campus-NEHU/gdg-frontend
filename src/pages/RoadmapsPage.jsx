@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { apiFetch } from '../api';
+import { buildDetailPath } from '../utils/contentRouting';
 
 function RoadmapsPage() {
   const [roadmaps, setRoadmaps] = useState([]);
@@ -23,7 +24,7 @@ function RoadmapsPage() {
         {roadmaps.map(roadmap => (
           <Link
             key={roadmap.id}
-            to={`/roadmaps/${roadmap.id}`}
+            to={buildDetailPath('roadmaps', roadmap)}
             className="glass-card roadmap-card card-link"
           >
             <div className="icon">{roadmap.icon_name}</div>

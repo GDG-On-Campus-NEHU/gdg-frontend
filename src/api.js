@@ -47,3 +47,26 @@ export const apiFetch = (path, options = {}) => {
     }
   });
 };
+
+const hasDetailParam = (value) => typeof value === 'string' && value.trim().length > 0;
+const buildDetailPath = (resource, detailParam) =>
+  `/api/${resource}/${encodeURIComponent(String(detailParam).trim())}/`;
+
+const fetchDetailBySlug = (resource, slug, legacyId) => {
+  if (hasDetailParam(slug)) {
+    return apiFetch(buildDetailPath(resource, slug));
+  }
+
+  if (legacyId !== undefined && legacyId !== null) {
+    console.warn(`[api] Missing slug for ${resource}; falling back to id detail path.`);
+    return apiFetch(buildDetailPath(resource, legacyId));
+  }
+
+  return Promise.reject(new Error(`Missing detail identifier for ${resource}`));
+};
+
+export const fetchBlogDetail = (slug, legacyId) => fetchDetailBySlug('blog', slug, legacyId);
+export const fetchProjectDetail = (slug, legacyId) => fetchDetailBySlug('projects', slug, legacyId);
+export const fetchEventDetail = (slug, legacyId) => fetchDetailBySlug('events', slug, legacyId);
+export const fetchRoadmapDetail = (slug, legacyId) => fetchDetailBySlug('roadmaps', slug, legacyId);
+export const fetchTeamDetail = (slug, legacyId) => fetchDetailBySlug('team', slug, legacyId);

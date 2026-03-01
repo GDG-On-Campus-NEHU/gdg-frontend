@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import DOMPurify from 'dompurify';
 import { ExternalLink } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
-import { apiFetch } from '../api';
+import { apiFetch, fetchEventDetail } from '../api';
 import { processContent } from '../utils/contentProcessor';
 import {
   formatCalendarDate,
@@ -13,6 +13,7 @@ import {
   parseDateValue,
   resolveRegistrationState,
 } from '../utils/eventRegistration';
+import { buildDetailPath } from '../utils/contentRouting';
 import '../styles/CKEditorContent.css';
 
 const HOUR_MS = 60 * 60 * 1000;
@@ -78,7 +79,7 @@ function IconBadge({ kind }) {
 }
 
 function EventDetailPage() {
-  const { eventId } = useParams();
+  const { slug } = useParams();
   const [event, setEvent] = useState(null);
   const [moreEvents, setMoreEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -89,7 +90,7 @@ function EventDetailPage() {
     setIsLoading(true);
     setErrorMessage('');
 
-    apiFetch(`/api/events/${eventId}/`)
+    fetchEventDetail(slug)
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('Request failed'))))
       .then((data) => {
         setEvent(data);
@@ -99,20 +100,20 @@ function EventDetailPage() {
         setErrorMessage('Unable to load this event right now.');
         setIsLoading(false);
       });
-  }, [eventId]);
+  }, [slug]);
 
   useEffect(() => {
     apiFetch('/api/events/')
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('Request failed'))))
       .then((data) => {
         const list = Array.isArray(data) ? data : [];
-        const filtered = list.filter((item) => String(item.id) !== String(eventId));
+        const filtered = list.filter((item) => String(item.id) !== String(event?.id));
         setMoreEvents(filtered.slice(0, 3));
       })
       .catch(() => {
         setMoreEvents([]);
       });
-  }, [eventId]);
+  }, [event?.id, slug]);
 
   const eventDate = useMemo(() => {
     return parseDateValue(event?.event_date);
@@ -158,7 +159,7 @@ function EventDetailPage() {
   const pageDescription = event?.short_description || event?.summary || 'Read more on GDGOC NEHU';
   const pageImage = event?.banner_image || event?.image_url || event?.image || 'https://gdgnehu.pages.dev/og-default.png';
   const pageUrl =
-    typeof window !== 'undefined' ? window.location.href : `https://gdgnehu.pages.dev/events/${eventId}`;
+    typeof window !== 'undefined' ? window.location.href : `https://gdgnehu.pages.dev/events/${slug}`;
 
   const handleShare = async () => {
     const shareData = {
@@ -543,7 +544,7 @@ function EventDetailPage() {
             </div>
             <div className="grid-layout related-grid">
               {moreEvents.slice(0, 3).map((item, index) => (
-                <Link to={`/events/${item.id}`} key={item.id} className="card-link">
+                <Link to={buildDetailPath('events', item)} key={item.id} className="card-link">
                   <GlassCard
                     imgSrc={item.image_url}
                     title={item.title}

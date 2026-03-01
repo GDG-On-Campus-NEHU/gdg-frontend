@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { apiFetch } from '../api';
+import { buildDetailPath } from '../utils/contentRouting';
 
 function TeamPage() {
   const [teamMembers, setTeamMembers] = useState([]);
@@ -22,7 +23,7 @@ function TeamPage() {
       <div className="grid-layout team-grid">
         {teamMembers.map((member, index) => (
           <Link
-            to={`/team/${member.id}`}
+            to={buildDetailPath('team', member)}
             key={member.id}
             className={`glass-card team-card card-variant-${(index % 4) + 1} card-link`}
           >

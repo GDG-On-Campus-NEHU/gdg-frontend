@@ -19,11 +19,11 @@ describe('HomePage landing data integration', () => {
       source: 'bootstrap',
       tags: [{ id: 1, name: 'AI', slug: 'ai' }],
       tagsPopular: [],
-      blogs: [{ id: 101, title: 'Blog Test', summary: 'Summary' }],
-      projects: [{ id: 201, title: 'Project Test', description: 'Desc' }],
-      events: [{ id: 301, title: 'Event Test', summary: 'Event summary' }],
-      roadmaps: [{ id: 401, title: 'Roadmap Test', description: 'Roadmap desc', icon_name: 'R' }],
-      team: [{ id: 501, name: 'Member Test', role: 'Lead', photo_url: '/member.png' }],
+      blogs: [{ id: 101, slug: 'blog-test', title: 'Blog Test', summary: 'Summary' }],
+      projects: [{ id: 201, slug: 'project-test', title: 'Project Test', description: 'Desc' }],
+      events: [{ id: 301, slug: 'event-test', title: 'Event Test', summary: 'Event summary' }],
+      roadmaps: [{ id: 401, slug: 'roadmap-test', title: 'Roadmap Test', description: 'Roadmap desc', icon_name: 'R' }],
+      team: [{ id: 501, slug: 'member-test', name: 'Member Test', role: 'Lead', photo_url: '/member.png' }],
     });
 
     render(

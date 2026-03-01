@@ -3,12 +3,13 @@ import { Link, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import DOMPurify from 'dompurify';
 import GlassCard from '../components/GlassCard';
-import { apiFetch } from '../api';
+import { apiFetch, fetchRoadmapDetail } from '../api';
 import { processContent } from '../utils/contentProcessor';
+import { buildDetailPath } from '../utils/contentRouting';
 import '../styles/CKEditorContent.css';
 
 function RoadmapDetailPage() {
-  const { roadmapId } = useParams();
+  const { slug } = useParams();
   const [roadmap, setRoadmap] = useState(null);
   const [moreRoadmaps, setMoreRoadmaps] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +26,7 @@ function RoadmapDetailPage() {
     setIsLoading(true);
     setErrorMessage('');
 
-    apiFetch(`/api/roadmaps/${roadmapId}/`)
+    fetchRoadmapDetail(slug)
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('Request failed'))))
       .then((data) => {
         setRoadmap(data);
@@ -35,21 +36,21 @@ function RoadmapDetailPage() {
         setErrorMessage('Unable to load this roadmap right now.');
         setIsLoading(false);
       });
-  }, [roadmapId]);
+  }, [slug]);
 
   useEffect(() => {
     apiFetch('/api/roadmaps/')
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('Request failed'))))
       .then((data) => {
         const list = Array.isArray(data) ? data : [];
-        const filtered = list.filter((item) => String(item.id) !== String(roadmapId));
+        const filtered = list.filter((item) => String(item.id) !== String(roadmap?.id));
         const shuffled = [...filtered].sort(() => Math.random() - 0.5);
         setMoreRoadmaps(shuffled.slice(0, 3));
       })
       .catch(() => {
         setMoreRoadmaps([]);
       });
-  }, [roadmapId]);
+  }, [roadmap?.id, slug]);
   const contentHtml =
     roadmap?.content ||
     (roadmap?.description ? `<p>${roadmap.description}</p>` : '<p>Details coming soon.</p>');
@@ -138,7 +139,7 @@ function RoadmapDetailPage() {
 
     headings.forEach((heading) => observer.observe(heading));
     return () => observer.disconnect();
-  }, [isLoading, roadmap, roadmapId, sanitizedContent]);
+  }, [isLoading, roadmap, slug, sanitizedContent]);
 
   if (isLoading) {
     return (
@@ -167,7 +168,7 @@ function RoadmapDetailPage() {
   const pageImage =
     roadmap.banner_image || roadmap.image_url || roadmap.image || 'https://gdgnehu.pages.dev/og-default.png';
   const pageUrl =
-    typeof window !== 'undefined' ? window.location.href : `https://gdgnehu.pages.dev/roadmaps/${roadmapId}`;
+    typeof window !== 'undefined' ? window.location.href : `https://gdgnehu.pages.dev/roadmaps/${slug}`;
 
   const handleShare = async () => {
     const shareData = {
@@ -272,7 +273,7 @@ function RoadmapDetailPage() {
               </div>
               <div className="grid-layout related-grid">
                 {moreRoadmaps.slice(0, 3).map((item, index) => (
-                  <Link to={`/roadmaps/${item.id}`} key={item.id} className="card-link">
+                  <Link to={buildDetailPath('roadmaps', item)} key={item.id} className="card-link">
                     <GlassCard
                       imgSrc={item.image_url}
                       title={item.title || item.name}

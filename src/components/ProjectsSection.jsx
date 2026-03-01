@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Section from './Section';
 import GlassCard from './GlassCard';
+import { buildDetailPath } from '../utils/contentRouting';
 
 function ProjectsSection({ projects = [], loading = false }) {
   const getTagName = (tag) => (typeof tag === 'string' ? tag : tag?.name);
@@ -16,7 +17,7 @@ function ProjectsSection({ projects = [], loading = false }) {
     >
       <div className="grid-layout">
         {showProjects.map((project, index) => (
-          <Link to={`/projects/${project.id}`} key={project.id} className="card-link">
+          <Link to={buildDetailPath('projects', project)} key={project.id} className="card-link">
             <GlassCard
               imgSrc={project.image_url || project.photo_url}
               title={project.title || project.name}

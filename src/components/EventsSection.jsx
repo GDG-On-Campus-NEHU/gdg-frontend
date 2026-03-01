@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Section from './Section';
 import GlassCard from './GlassCard';
+import { buildDetailPath } from '../utils/contentRouting';
 
 function EventsSection({ events = [], loading = false }) {
   const showEvents = events.slice(0, 3);
@@ -16,7 +17,7 @@ function EventsSection({ events = [], loading = false }) {
     >
       <div className="grid-layout">
         {showEvents.map((event, index) => (
-          <Link to={`/events/${event.id}`} key={event.id} className="card-link">
+          <Link to={buildDetailPath('events', event)} key={event.id} className="card-link">
             <GlassCard
               imgSrc={event.image_url}
               title={event.title}

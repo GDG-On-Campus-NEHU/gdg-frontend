@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
 import { apiFetch } from '../api';
 import { formatCalendarDate } from '../utils/eventRegistration';
+import { buildDetailPath } from '../utils/contentRouting';
 
 function EventsPage() {
   const [events, setEvents] = useState([]);
@@ -61,7 +62,7 @@ function EventsPage() {
             )}
             <div className="blog-hero-actions">
               {heroEvent?.id ? (
-                <Link to={`/events/${heroEvent.id}`} className="blog-hero-button">
+                <Link to={buildDetailPath('events', heroEvent)} className="blog-hero-button">
                   View event
                 </Link>
               ) : (
@@ -82,7 +83,7 @@ function EventsPage() {
         </div>
         <div className="grid-layout">
           {remainingEvents.map((event) => (
-            <Link to={`/events/${event.id}`} key={event.id} className="card-link">
+            <Link to={buildDetailPath('events', event)} key={event.id} className="card-link">
               <GlassCard
                 imgSrc={event.image_url}
                 title={event.title}

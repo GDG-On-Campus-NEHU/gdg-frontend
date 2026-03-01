@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Section from '../components/Section';
+import { buildTagItemPath } from '../utils/contentRouting';
 
 function TagPage() {
   const { slug } = useParams();
@@ -57,19 +58,7 @@ function TagPage() {
   }, [slug]);
 
   function itemLink(item) {
-    if (!item) return '#';
-    if (item.url) return item.url;
-    const type = (item.type || '').toLowerCase();
-    const id = item.id || item.pk || item.slug;
-    switch (type) {
-      case 'project': return `/projects/${id}`;
-      case 'post':
-      case 'blog': return `/blog/${id}`;
-      case 'event': return `/events/${id}`;
-      case 'roadmap': return `/roadmaps/${id}`;
-      case 'team': return `/team/${id}`;
-      default: return '#';
-    }
+    return buildTagItemPath(item);
   }
 
   return (

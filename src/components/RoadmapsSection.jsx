@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Section from './Section';
+import { buildDetailPath } from '../utils/contentRouting';
 
 function RoadmapsSection({ roadmaps = [], loading = false }) {
   const showRoadmaps = roadmaps.slice(0, 2);
@@ -16,7 +17,7 @@ function RoadmapsSection({ roadmaps = [], loading = false }) {
         {showRoadmaps.map((roadmap, index) => (
           <Link
             key={roadmap.id}
-            to={`/roadmaps/${roadmap.id}`}
+            to={buildDetailPath('roadmaps', roadmap)}
             className={`glass-card roadmap-card card-variant-${(index % 4) + 1} card-link`}
           >
             <div className="icon">{roadmap.icon_name || roadmap.icon || roadmap.emoji || '🧭'}</div>

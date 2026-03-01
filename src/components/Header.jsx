@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiFetch } from '../api';
+import { buildSearchResultPath } from '../utils/contentRouting';
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -142,15 +143,10 @@ function Header() {
     }
   })();
 
-  const handleResultClick = (type, id) => {
+  const handleResultClick = (type, item) => {
     closeSearch();
     setIsMenuOpen(false);
-    // navigate to appropriate detail page
-    if (type === 'blogs') navigate(`/blog/${id}`);
-    else if (type === 'projects') navigate(`/projects/${id}`);
-    else if (type === 'team') navigate(`/team/${id}`);
-    else if (type === 'events') navigate(`/events/${id}`);
-    else if (type === 'roadmaps') navigate(`/roadmaps/${id}`);
+    navigate(buildSearchResultPath(type, item));
   };
 
   const getRoadmapEmoji = (item) => item?.icon_name || item?.emoji || item?.icon || '🗺️';
@@ -229,7 +225,7 @@ function Header() {
                       <div key={section} className="search-section">
                         <div className="search-section-title">{section}</div>
                         {searchResults[section].map(item => (
-                          <button key={`${section}-${item.id}`} className="search-item" onClick={() => handleResultClick(section, item.id)}>
+                          <button key={`${section}-${item.id}`} className="search-item" onClick={() => handleResultClick(section, item)}>
                             {section === 'roadmaps' ? (
                               <div className="search-item-thumb search-item-thumb--roadmap" aria-hidden="true">
                                 {getRoadmapEmoji(item)}

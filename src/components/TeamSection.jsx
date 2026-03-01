@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Section from './Section';
+import { buildDetailPath } from '../utils/contentRouting';
 
 function TeamSection({ teamMembers = [], loading = false }) {
   const showTeamMembers = teamMembers.slice(0, 4);
@@ -16,7 +17,7 @@ function TeamSection({ teamMembers = [], loading = false }) {
         {showTeamMembers.map((member, index) => (
           <Link
             key={member.id}
-            to={`/team/${member.id}`}
+            to={buildDetailPath('team', member)}
             className={`glass-card team-card card-variant-${(index % 4) + 1} card-link`}
           >
             <img src={member.photo_url || member.image_url} alt={member.name || member.title || 'Team member'} />

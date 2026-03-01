@@ -3,25 +3,26 @@ import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import DOMPurify from 'dompurify';
 import GlassCard from '../components/GlassCard';
-import { apiFetch } from '../api';
+import { apiFetch, fetchBlogDetail } from '../api';
 import { processContent } from '../utils/contentProcessor';
+import { buildDetailPath } from '../utils/contentRouting';
 import '../styles/CKEditorContent.css';
 
 function BlogDetailPage() {
-  const { postId } = useParams();
+  const { slug } = useParams();
   const [post, setPost] = useState(null);
   const [morePosts, setMorePosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    window.scrollTo(0, 0); 
+    window.scrollTo(0, 0);
     setIsLoading(true);
     setErrorMessage('');
 
-    apiFetch(`/api/blog/${postId}/`)
-      .then(response => (response.ok ? response.json() : Promise.reject(new Error('Request failed'))))
-      .then(data => {
+    fetchBlogDetail(slug)
+      .then((response) => (response.ok ? response.json() : Promise.reject(new Error('Request failed'))))
+      .then((data) => {
         setPost(data);
         setIsLoading(false);
       })
@@ -29,7 +30,7 @@ function BlogDetailPage() {
         setErrorMessage('Unable to load this post right now.');
         setIsLoading(false);
       });
-  }, [postId]);
+  }, [slug]);
 
   useEffect(() => {
     if (post && window.Prism) {
@@ -45,13 +46,13 @@ function BlogDetailPage() {
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('Request failed'))))
       .then((data) => {
         const list = Array.isArray(data) ? data : [];
-        const filtered = list.filter((item) => String(item.id) !== String(postId));
+        const filtered = list.filter((item) => String(item.id) !== String(post?.id));
         setMorePosts(filtered.slice(0, 3));
       })
       .catch(() => {
         setMorePosts([]);
       });
-  }, [postId]);
+  }, [post?.id, slug]);
 
   if (isLoading) {
     return (
@@ -86,7 +87,7 @@ function BlogDetailPage() {
         day: 'numeric',
       })
     : '';
-  const tagList = (post.tags || []).map(tag => (typeof tag === 'string' ? tag : tag.name)).filter(Boolean);
+  const tagList = (post.tags || []).map((tag) => (typeof tag === 'string' ? tag : tag.name)).filter(Boolean);
   const relatedPosts = Array.isArray(post.related_posts) ? post.related_posts : [];
   const suggestedPosts = relatedPosts.length > 0 ? relatedPosts.slice(0, 3) : morePosts;
   const summaryText = post.summary || '';
@@ -94,7 +95,7 @@ function BlogDetailPage() {
   const pageDescription = post.short_description || post.summary || 'Read more on GDGOC NEHU';
   const pageImage = post.banner_image || post.image_url || post.image || 'https://gdgnehu.pages.dev/og-default.png';
   const pageUrl =
-    typeof window !== 'undefined' ? window.location.href : `https://gdgnehu.pages.dev/blog/${postId}`;
+    typeof window !== 'undefined' ? window.location.href : `https://gdgnehu.pages.dev/blog/${slug}`;
 
   const handleShare = async () => {
     const shareData = {
@@ -207,7 +208,7 @@ function BlogDetailPage() {
               </div>
               <div className="grid-layout related-grid">
                 {suggestedPosts.slice(0, 3).map((relatedPost, index) => (
-                  <Link to={`/blog/${relatedPost.id}`} key={relatedPost.id} className="card-link">
+                  <Link to={buildDetailPath('blog', relatedPost)} key={relatedPost.id} className="card-link">
                     <GlassCard
                       imgSrc={relatedPost.image_url}
                       title={relatedPost.title}
@@ -232,4 +233,3 @@ function BlogDetailPage() {
 }
 
 export default BlogDetailPage;
-

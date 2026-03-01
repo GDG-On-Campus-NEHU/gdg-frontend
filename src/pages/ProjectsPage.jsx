@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
 import { apiFetch } from '../api';
+import { buildDetailPath } from '../utils/contentRouting';
 
 function ProjectsPage() {
   const [projects, setProjects] = useState([]);
@@ -56,7 +57,7 @@ function ProjectsPage() {
             )}
             <div className="blog-hero-actions">
               {heroProject?.id ? (
-                <Link to={`/projects/${heroProject.id}`} className="blog-hero-button">
+                <Link to={buildDetailPath('projects', heroProject)} className="blog-hero-button">
                   View project
                 </Link>
               ) : (
@@ -77,7 +78,7 @@ function ProjectsPage() {
         </div>
         <div className="grid-layout">
           {remainingProjects.map(project => (
-            <Link to={`/projects/${project.id}`} key={project.id} className="card-link">
+            <Link to={buildDetailPath('projects', project)} key={project.id} className="card-link">
               <GlassCard
                 imgSrc={project.image_url}
                 title={project.title}

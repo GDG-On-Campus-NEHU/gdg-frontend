@@ -3,12 +3,13 @@ import { Link, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import DOMPurify from 'dompurify';
 import GlassCard from '../components/GlassCard';
-import { apiFetch } from '../api';
+import { apiFetch, fetchProjectDetail } from '../api';
 import { processContent } from '../utils/contentProcessor';
+import { buildDetailPath } from '../utils/contentRouting';
 import '../styles/CKEditorContent.css';
 
 function ProjectDetailPage() {
-  const { projectId } = useParams();
+  const { slug } = useParams();
   const [project, setProject] = useState(null);
   const [moreProjects, setMoreProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -19,7 +20,7 @@ function ProjectDetailPage() {
     setIsLoading(true);
     setErrorMessage('');
 
-    apiFetch(`/api/projects/${projectId}/`)
+    fetchProjectDetail(slug)
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('Request failed'))))
       .then((data) => {
         setProject(data);
@@ -29,21 +30,21 @@ function ProjectDetailPage() {
         setErrorMessage('Unable to load this project right now.');
         setIsLoading(false);
       });
-  }, [projectId]);
+  }, [slug]);
 
   useEffect(() => {
     apiFetch('/api/projects/')
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('Request failed'))))
       .then((data) => {
         const list = Array.isArray(data) ? data : [];
-        const filtered = list.filter((item) => String(item.id) !== String(projectId));
+        const filtered = list.filter((item) => String(item.id) !== String(project?.id));
         const shuffled = [...filtered].sort(() => Math.random() - 0.5);
         setMoreProjects(shuffled.slice(0, 3));
       })
       .catch(() => {
         setMoreProjects([]);
       });
-  }, [projectId]);
+  }, [project?.id, slug]);
 
   if (isLoading) {
     return (
@@ -85,7 +86,7 @@ function ProjectDetailPage() {
   const pageImage =
     project.banner_image || project.image_url || project.image || 'https://gdgnehu.pages.dev/og-default.png';
   const pageUrl =
-    typeof window !== 'undefined' ? window.location.href : `https://gdgnehu.pages.dev/projects/${projectId}`;
+    typeof window !== 'undefined' ? window.location.href : `https://gdgnehu.pages.dev/projects/${slug}`;
 
   const handleShare = async () => {
     const shareData = {
@@ -169,7 +170,7 @@ function ProjectDetailPage() {
               </div>
               <div className="grid-layout related-grid">
                 {moreProjects.slice(0, 3).map((item, index) => (
-                  <Link to={`/projects/${item.id}`} key={item.id} className="card-link">
+                  <Link to={buildDetailPath('projects', item)} key={item.id} className="card-link">
                     <GlassCard
                       imgSrc={item.image_url}
                       title={item.title}

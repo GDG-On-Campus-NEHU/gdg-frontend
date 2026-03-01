@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import DOMPurify from 'dompurify';
-import { apiFetch } from '../api';
+import { fetchTeamDetail } from '../api';
 
 function TeamMemberPage() {
-  const { memberId } = useParams();
+  const { slug } = useParams();
   const [member, setMember] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -14,7 +14,7 @@ function TeamMemberPage() {
     setIsLoading(true);
     setErrorMessage('');
 
-    apiFetch(`/api/team/${memberId}/`)
+    fetchTeamDetail(slug)
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('Request failed'))))
       .then((data) => {
         setMember(data);
@@ -24,7 +24,7 @@ function TeamMemberPage() {
         setErrorMessage('Unable to load this team member right now.');
         setIsLoading(false);
       });
-  }, [memberId]);
+  }, [slug]);
 
   if (isLoading) {
     return (
